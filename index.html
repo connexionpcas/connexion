@@ -1638,29 +1638,35 @@
     // FIREBASE SETUP
     // ══════════════════════════════════════════════════════════════
     function initFirebase(databaseURL) {
-      try {
-        // Re-initialize if needed
-        if (firebase.apps.length > 0) {
-          firebase.apps.forEach(app => app.delete());
+      const url = databaseURL.trim().replace(/\/$/, '');
+
+      // If Firebase is already initialised with the same URL, reuse it
+      if (firebase.apps.length > 0) {
+        const existing = firebase.apps[0];
+        if (existing.options.databaseURL === url) {
+          // Already connected — just make sure listener is running
+          db = existing.database();
+          db.ref('.info/connected').on('value', snap => {
+            updateConnStatus(snap.val(), 'conn-status');
+            updateConnStatus(snap.val(), 'player-conn-status');
+          });
+          return;
         }
-      } catch (e) { }
-      const config = {
-        apiKey: 'AIzaSyPlaceholder',   // Not needed for Realtime DB with test rules
-        databaseURL: databaseURL.trim().replace(/\/$/, '')
-      };
+        // Different URL — delete old app first (synchronously via compat SDK)
+        try { existing.delete(); } catch(e) {}
+      }
+
       try {
-        firebase.initializeApp(config);
+        firebase.initializeApp({ apiKey: 'AIzaSyDummy', databaseURL: url });
         db = firebase.database();
-        // Test connection
         db.ref('.info/connected').on('value', snap => {
-          const connected = snap.val();
-          updateConnStatus(connected, 'conn-status');
-          updateConnStatus(connected, 'player-conn-status');
+          updateConnStatus(snap.val(), 'conn-status');
+          updateConnStatus(snap.val(), 'player-conn-status');
         });
-        return true;
       } catch (e) {
-        showToast('❌ Firebase init failed: ' + e.message, 'error');
-        return false;
+        updateConnStatus(false, 'conn-status');
+        updateConnStatus(false, 'player-conn-status');
+        showToast('❌ Firebase error: ' + e.message, 'error');
       }
     }
 
@@ -1672,8 +1678,8 @@
       }
       localStorage.setItem('fbUrl', url);
       document.getElementById('player-firebase-url').value = url;
+      showToast('🔥 Connecting to Firebase…', 'info');
       initFirebase(url);
-      showToast('🔥 Firebase connecting…', 'info');
     }
 
     function saveFirebaseConfigPlayer() {
@@ -1684,8 +1690,8 @@
       }
       localStorage.setItem('fbUrl', url);
       document.getElementById('firebase-url').value = url;
+      showToast('🔥 Connecting to Firebase…', 'info');
       initFirebase(url);
-      showToast('🔥 Firebase connecting…', 'info');
     }
 
     function updateConnStatus(connected, elId) {
@@ -1820,34 +1826,34 @@
     function listenAsHost() {
       detachListeners();
 
-      // Listen for player joins/updates
+      // FIX A: Only sync localPlayers FROM Firebase during lobby.
+      // During gameplay, localPlayers is the authoritative source of truth on the host.
+      // Overwriting it from Firebase mid-game resets chances/scores that were just computed.
       const playersRef = roomRef.child('players');
       const playersFn = snap => {
-        localPlayers = snap.val() || {};
         if (localStatus === 'lobby') {
+          localPlayers = snap.val() || {};
           renderLobbyPlayers();
           updateStartBtn();
-        } else if (localStatus === 'playing') {
-          renderDashboard();
         }
+        // During 'playing': do NOT overwrite localPlayers from Firebase here.
       };
       playersRef.on('value', playersFn);
       myListeners.push({ ref: playersRef, evt: 'value', fn: playersFn });
 
-      // Listen for player actions (answers, timeouts, left events)
+      // FIX B: Use child_added instead of value for actions.
+      // .on('value') fired for ALL actions every time ANY action was added/changed —
+      // causing every action to be processed multiple times and corrupting game state.
+      // child_added fires exactly ONCE per action, in order, and never replays old ones.
       const actionsRef = roomRef.child('actions');
       const actionsFn = snap => {
-        const actions = snap.val();
-        if (!actions) return;
-        Object.entries(actions).forEach(([key, action]) => {
-          if (action.processed) return;
-          // Mark processed
-          actionsRef.child(key).update({ processed: true });
-          handleHostAction(action.type, action.data);
-        });
+        const action = snap.val();
+        if (!action || action.processed) return;
+        snap.ref.update({ processed: true });
+        handleHostAction(action.type, action.data);
       };
-      actionsRef.on('value', actionsFn);
-      myListeners.push({ ref: actionsRef, evt: 'value', fn: actionsFn });
+      actionsRef.on('child_added', actionsFn);
+      myListeners.push({ ref: actionsRef, evt: 'child_added', fn: actionsFn });
     }
 
     function handleHostAction(type, data) {
@@ -1877,7 +1883,11 @@
       if (type === 'PLAYER_ANSWER') {
         if (data.roomCode !== roomCode) return;
         const player = localPlayers[data.playerId];
-        if (!player || player.answerStatus === 'correct') return;
+        if (!player) return;
+        // FIX C: Block players who already answered correctly, ran out of chances, or timed out.
+        // Also remove the (||3) fallback which masked 0 chances as truthy, treating 0 as 3.
+        if (['correct', 'failed', 'timeout'].includes(player.answerStatus)) return;
+        if (player.chances <= 0) return;
         const q = hostQuestions[localCurrentQ];
         if (!q) return;
         const correct = data.answer.toUpperCase().replace(/\s+/g, ' ').trim() === q.answer;
@@ -1894,7 +1904,7 @@
             score: player.score, bonus, ts: Date.now()
           });
         } else {
-          player.chances = Math.max(0, (player.chances || 3) - 1);
+          player.chances = Math.max(0, player.chances - 1);
           player.currentAnswer = data.answer;
           player.wrongCount++;
           let deducted = false;
@@ -2248,31 +2258,29 @@
     }
 
     function listenAsPlayer(pRoomRef, code, pid) {
-      // Listen for messages directed to this player
+      // FIX D1: child_added for player messages fires ONCE per message, never replays old ones.
+      // The old .on('value') iterated ALL messages on every new arrival — so a single
+      // new ANSWER_RESULT caused ALL previous ANSWER_RESULTs to re-fire, corrupting
+      // chances and score on the player side.
       const msgRef = pRoomRef.child('playerMessages/' + pid);
       const msgFn = snap => {
-        snap.forEach(child => {
-          const msg = child.val();
-          if (!msg) return;
-          handlePlayerMsg(msg.type, msg);
-        });
+        const msg = snap.val();
+        if (msg) handlePlayerMsg(msg.type, msg);
       };
-      msgRef.on('value', msgFn);
-      myListeners.push({ ref: msgRef, evt: 'value', fn: msgFn });
+      msgRef.on('child_added', msgFn);
+      myListeners.push({ ref: msgRef, evt: 'child_added', fn: msgFn });
 
-      // Listen for broadcast messages (reveal, game over)
+      // FIX D2: child_added for broadcast — old .on('value') replayed every QUESTION_REVEAL
+      // on every Firebase update, calling showRevealBanner repeatedly mid-question.
       const bcRef = pRoomRef.child('broadcast');
       const bcFn = snap => {
-        snap.forEach(child => {
-          const msg = child.val();
-          if (!msg || !playerState) return;
-          if (msg.type === 'QUESTION_REVEAL') showRevealBanner(msg.answer);
-        });
+        const msg = snap.val();
+        if (msg && playerState && msg.type === 'QUESTION_REVEAL') showRevealBanner(msg.answer);
       };
-      bcRef.on('value', bcFn);
-      myListeners.push({ ref: bcRef, evt: 'value', fn: bcFn });
+      bcRef.on('child_added', bcFn);
+      myListeners.push({ ref: bcRef, evt: 'child_added', fn: bcFn });
 
-      // Listen for room state changes (game start, next question, game over, terminated)
+      // Room-level .on('value') is correct here — we need to react to status/question changes
       const roomFn = snap => {
         const room = snap.val();
         if (!room || !playerState) return;
@@ -2285,14 +2293,14 @@
         }
         if (room.status === 'gameover' && playerState.currentQ >= 0) {
           clearInterval(playerTimerInterval);
-          clearTimeout(autoNextTimer);
+          clearInterval(autoNextTimer);
           showPlayerGameOver(room.players);
           return;
         }
         if (room.status === 'playing') {
           const q = room.currentQuestion;
           const qIdx = room.currentQ;
-          if (!playerState.joined) return; // wait for JOIN_OK first
+          if (!playerState.joined) return;
 
           if (playerState.currentQ < 0) {
             // Game just started
@@ -2312,7 +2320,7 @@
             playerState.chances = 3;
             playerState.questionStartTime = room.questionStartTime;
             if (q) playerState.questions[qIdx] = q;
-            clearInterval(playerTimerInterval); clearTimeout(autoNextTimer);
+            clearInterval(playerTimerInterval); clearInterval(autoNextTimer);
             startPlayerQuestion();
           }
         }
@@ -2320,7 +2328,7 @@
       pRoomRef.on('value', roomFn);
       myListeners.push({ ref: pRoomRef, evt: 'value', fn: roomFn });
 
-      // Also listen for players list (for waiting room)
+      // Waiting room player list
       const plRef = pRoomRef.child('players');
       const plFn = snap => {
         const players = snap.val() || {};
@@ -2444,10 +2452,10 @@
         document.getElementById('pg-score').textContent = `${playerState.score} pts`;
         document.getElementById('pg-solved-count').textContent = `${playerState.correctCount} / 80`;
         let cd = 3;
+        // FIX F: q.answer is undefined on player side — removed from banner to avoid showing blank
         document.getElementById('result-section').innerHTML = `
       <div class="reveal-banner">
         <div style="font-size:26px">🎉 Correct!</div>
-        <div class="answer-word" style="margin:8px 0">${q ? q.answer : ''}</div>
         <div class="sub">+10 pts${bonus > 0 ? ` + ${bonus} speed bonus! ⚡` : ''}</div>
         <div class="auto-next-bar"><div class="auto-next-fill" id="anf" style="width:100%"></div></div>
         <div class="auto-next-label" id="anl">Next in ${cd}s…</div></div>`;
@@ -2535,12 +2543,17 @@
     }
 
     // ── HINTS ──
+    // FIX E: The host strips q.answer before sending to Firebase so players can't cheat.
+    // Old code accessed p.answer directly — undefined on player side — crashing the timer
+    // and breaking hint unlock. Now falls back gracefully when answer is not present.
     function getHints(p) {
-      const a = p.answer, len = a.length;
+      const hint = p.hint || '?';
+      const a = p.answer || '';
+      const len = a.length;
       return [
-        p.hint,
-        a[0] + ' ' + Array(len - 1).fill('_').join(' '),
-        a[0] + ' ' + Array(len - 2).fill('·').join(' ') + ' ' + a[len - 1]
+        hint,
+        len > 0 ? a[0] + ' ' + Array(len - 1).fill('_').join(' ') : '_ _ _ _ _',
+        len > 0 ? a[0] + ' ' + Array(Math.max(0, len - 2)).fill('·').join(' ') + ' ' + a[len - 1] : '? … ?'
       ];
     }
     function resetHints(puz) {
