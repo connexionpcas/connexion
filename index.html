@@ -2421,12 +2421,12 @@
         if (data.roomCode !== roomCode) return;
         const player = localPlayers[data.playerId];
         if (!player) return;
-        // FIX C: Block players who already answered correctly, ran out of chances, or timed out.
-        // Also remove the (||3) fallback which masked 0 chances as truthy, treating 0 as 3.
         if (['correct', 'failed', 'timeout'].includes(player.answerStatus)) return;
         if (player.chances <= 0) return;
         const q = hostQuestions[localCurrentQ];
         if (!q) return;
+        // Guard: reject stale answers sent for a previous question
+        if (data.questionIndex !== undefined && data.questionIndex !== localCurrentQ) return;
         const correct = data.answer.toUpperCase().replace(/\s+/g, ' ').trim() === q.answer;
         if (correct) {
           const taken = (Date.now() - (data.questionStartTime || Date.now())) / 1000;
@@ -2460,6 +2460,8 @@
           });
         }
         renderDashboard();
+        // Auto-advance if every active player has finished this question
+        checkAllAnswered();
       }
 
       if (type === 'PLAYER_TIMEOUT') {
@@ -2469,6 +2471,8 @@
         p.answerStatus = 'timeout'; p.timeoutCount++;
         roomRef.child('players/' + data.playerId).set(p);
         renderDashboard();
+        // Auto-advance if every active player has now finished
+        checkAllAnswered();
       }
 
       if (type === 'PLAYER_LEFT') {
@@ -2505,6 +2509,19 @@
             { label: '❌ Deny', cls: 'deny', fn: () => hostDenyRejoin(data.playerId, p.name) }
           ]
         });
+      }
+    }
+
+    // Auto-advance when every active player has a final answerStatus
+    function checkAllAnswered() {
+      if (localStatus !== 'playing') return;
+      const active = Object.values(localPlayers).filter(p => p.status === 'online');
+      if (active.length === 0) return;
+      const allDone = active.every(p => ['correct', 'failed', 'timeout'].includes(p.answerStatus));
+      if (allDone) {
+        // Small delay so the last player sees their result before advancing
+        clearInterval(gameTimer);
+        setTimeout(() => hostNextQuestion(), 1500);
       }
     }
 
@@ -2628,13 +2645,13 @@
       localCurrentQ++;
       const now = Date.now();
 
-      // Reset player states for new question
+      // Reset ALL players for new question (not just 'online' ones —
+      // rejoined or briefly-disconnected players were being skipped,
+      // leaving stale answerStatus/chances that caused the game to get stuck).
       Object.keys(localPlayers).forEach(id => {
-        if (localPlayers[id].status === 'online') {
-          localPlayers[id].chances = 3;
-          localPlayers[id].answerStatus = 'waiting';
-          localPlayers[id].currentAnswer = null;
-        }
+        localPlayers[id].chances = 3;
+        localPlayers[id].answerStatus = 'waiting';
+        localPlayers[id].currentAnswer = null;
       });
 
       const nextQ = hostQuestions[localCurrentQ];
@@ -3055,6 +3072,7 @@
       clearInterval(playerTimerInterval);
       playerTimerInterval = null;
       playerTimerSecs = TIMER_MAX;
+      resetSubmitBtn(); // always re-enable at start of every new question
       const q = playerState.questions ? playerState.questions[playerState.currentQ] : null;
       if (!q) return;
 
@@ -3107,11 +3125,18 @@
       });
     }
 
+    let _submitInFlight = false;
     function submitAnswer() {
       if (!playerState || !playerState.questions) return;
       if (playerTimerSecs <= 0 || playerState.chances <= 0) return;
+      // Guard: already waiting for a response from host — prevent double-submit
+      if (_submitInFlight) return;
       const val = document.getElementById('player-answer').value.trim();
       if (!val) { showToast('Type your answer!', 'error'); return; }
+      _submitInFlight = true;
+      // Disable submit button visually while waiting
+      const btn = document.querySelector('#player-game .btn-primary');
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ Checking…'; }
       sendPlayerAction('PLAYER_ANSWER', {
         playerId: playerState.id,
         roomCode: playerState.roomCode,
@@ -3120,9 +3145,22 @@
         questionStartTime: playerState.questionStartTime
       });
       document.getElementById('player-answer').value = '';
+      // Safety timeout: if host doesn't respond in 5s, re-enable the button
+      setTimeout(() => {
+        _submitInFlight = false;
+        const b = document.querySelector('#player-game .btn-primary');
+        if (b && b.disabled) { b.disabled = false; b.textContent = 'Submit Answer'; }
+      }, 5000);
+    }
+
+    function resetSubmitBtn() {
+      _submitInFlight = false;
+      const btn = document.querySelector('#player-game .btn-primary');
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit Answer'; }
     }
 
     function showAnswerResult(correct, bonus = 0, deducted = false) {
+      resetSubmitBtn(); // always re-enable submit after we get a response
       const gc = document.getElementById('game-card');
       const q = playerState.questions ? playerState.questions[playerState.currentQ] : null;
 
