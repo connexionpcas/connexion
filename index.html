@@ -2512,12 +2512,14 @@
       }
     }
 
-    // Auto-advance when every active player has a final answerStatus
+    // Auto-advance ONLY when every active player has answered correctly or timed out.
+    // 'failed' (ran out of chances) does NOT trigger advance — those players must wait
+    // for the timer to run out like everyone else.
     function checkAllAnswered() {
       if (localStatus !== 'playing') return;
       const active = Object.values(localPlayers).filter(p => p.status === 'online');
       if (active.length === 0) return;
-      const allDone = active.every(p => ['correct', 'failed', 'timeout'].includes(p.answerStatus));
+      const allDone = active.every(p => ['correct', 'timeout'].includes(p.answerStatus));
       if (allDone) {
         // Small delay so the last player sees their result before advancing
         clearInterval(gameTimer);
