@@ -2354,8 +2354,9 @@
         showScreen('host-lobby');
         renderLobbyPlayers();
         listenAsHost();
-        // Set onDisconnect cleanup
-        roomRef.onDisconnect().update({ status: 'terminated' });
+        // NOTE: onDisconnect().update() is intentionally NOT set here.
+        // With 50+ players, a brief host network blip would fire it and terminate
+        // the room for everyone. The host can manually terminate instead.
       }).catch(e => showToast('Firebase write error: ' + e.message, 'error'));
     }
 
@@ -2578,15 +2579,22 @@
 
       // Write game start to Firebase — players listen for 'status' change
       const q = hostQuestions[0];
-      roomRef.update({
+      // Flat batch avoids writing all players as one giant object.
+      // With 50+ players, players:{...} forces every player to download
+      // the full list on each room update, overloading the connection.
+      const startBatch = {
         status: 'playing',
         currentQ: 0,
         questionStartTime: now,
         totalQPlayed: 0,
-        players: localPlayers,
-        // Current question visible to players (no answers)
         currentQuestion: { images: q.images, hint: q.hint, index: 0, letterCount: q.answer.replace(/\s/g, '').length, wordCount: q.answer.split(' ').length, firstLetter: q.answer[0], lastLetter: q.answer[q.answer.length - 1] }
+      };
+      Object.keys(localPlayers).forEach(id => {
+        startBatch['players/' + id + '/chances'] = 3;
+        startBatch['players/' + id + '/answerStatus'] = 'waiting';
+        startBatch['players/' + id + '/currentAnswer'] = null;
       });
+      roomRef.update(startBatch);
 
       showScreen('host-dashboard');
       renderDashboard();
@@ -2634,12 +2642,22 @@
         totalQPlayed: firebase.database.ServerValue.increment(1)
       });
 
+      // Write per-player resets individually to avoid one huge payload
+      const playerResetBatch = {};
+      Object.keys(localPlayers).forEach(id => {
+        if (localPlayers[id].status === 'online') {
+          playerResetBatch[`players/${id}/chances`] = 3;
+          playerResetBatch[`players/${id}/answerStatus`] = 'waiting';
+          playerResetBatch[`players/${id}/currentAnswer`] = null;
+        }
+      });
+
       setTimeout(() => {
         roomRef.update({
           currentQ: localCurrentQ,
           questionStartTime: now,
-          players: localPlayers,
-          currentQuestion: { images: nextQ.images, hint: nextQ.hint, index: localCurrentQ, letterCount: nextQ.answer.replace(/\s/g, '').length, wordCount: nextQ.answer.split(' ').length, firstLetter: nextQ.answer[0], lastLetter: nextQ.answer[nextQ.answer.length - 1] }
+          currentQuestion: { images: nextQ.images, hint: nextQ.hint, index: localCurrentQ, letterCount: nextQ.answer.replace(/\s/g, '').length, wordCount: nextQ.answer.split(' ').length, firstLetter: nextQ.answer[0], lastLetter: nextQ.answer[nextQ.answer.length - 1] },
+          ...playerResetBatch
         });
         renderDashboard();
         startHostTimer();
@@ -2651,7 +2669,9 @@
     function hostEndGame() {
       clearInterval(gameTimer);
       localStatus = 'gameover';
-      roomRef.update({ status: 'gameover', players: localPlayers });
+      // Write gameoverPlayers as a separate node — players listen to this instead of
+      // the full room, so they don't download all player data during gameplay.
+      roomRef.update({ status: 'gameover', gameoverPlayers: localPlayers });
       renderFinalDashboard({ players: localPlayers, totalQPlayed: localCurrentQ + 1 });
       showScreen('host-gameover');
     }
@@ -2897,53 +2917,69 @@
       bcRef.on('child_added', bcFn);
       myListeners.push({ ref: bcRef, evt: 'child_added', fn: bcFn });
 
-      // Room-level .on('value') is correct here — we need to react to status/question changes
-      const roomFn = snap => {
-        const room = snap.val();
-        if (!room || !playerState) return;
-        if (room.status === 'terminated') {
+      // FIX: Split room listener into targeted child refs instead of entire room.
+      // With 50+ players, pRoomRef.on('value') downloads ALL player data to every
+      // player on every tiny change. Targeting only the fields players need
+      // reduces per-player bandwidth by ~50x and prevents Firebase from
+      // rate-limiting / terminating the room connection.
+
+      // 1. Watch status node only
+      const statusRef = pRoomRef.child('status');
+      const statusFn = snap => {
+        const status = snap.val();
+        if (!playerState) return;
+        if (status === 'terminated') {
           showToast('🗑️ Host terminated the room', 'error');
           detachListeners();
           playerState = null;
           showScreen('player-join');
-          return;
-        }
-        if (room.status === 'gameover' && playerState.currentQ >= 0) {
-          clearInterval(playerTimerInterval);
-          clearInterval(autoNextTimer);
-          showPlayerGameOver(room.players);
-          return;
-        }
-        if (room.status === 'playing') {
-          const q = room.currentQuestion;
-          const qIdx = room.currentQ;
-          if (!playerState.joined) return;
-
-          if (playerState.currentQ < 0) {
-            // Game just started
-            playerState.currentQ = 0;
-            playerState.score = 0;
-            playerState.chances = 3;
-            playerState.questionStartTime = room.questionStartTime;
-            if (q) {
-              playerState.questions[0] = q;
-              setupTabLeave(pRoomRef, code, pid);
-              showScreen('player-game');
-              startPlayerQuestion();
-            }
-          } else if (qIdx > playerState.currentQ) {
-            // New question from host
-            playerState.currentQ = qIdx;
-            playerState.chances = 3;
-            playerState.questionStartTime = room.questionStartTime;
-            if (q) playerState.questions[qIdx] = q;
-            clearInterval(playerTimerInterval); clearInterval(autoNextTimer);
-            startPlayerQuestion();
-          }
         }
       };
-      pRoomRef.on('value', roomFn);
-      myListeners.push({ ref: pRoomRef, evt: 'value', fn: roomFn });
+      statusRef.on('value', statusFn);
+      myListeners.push({ ref: statusRef, evt: 'value', fn: statusFn });
+
+      // 2. Watch currentQuestion only (small object, no player data)
+      const cqRef = pRoomRef.child('currentQuestion');
+      const cqFn = snap => {
+        const q = snap.val();
+        if (!q || !playerState || !playerState.joined) return;
+        const qIdx = q.index;
+        if (playerState.currentQ < 0) {
+          playerState.currentQ = 0;
+          playerState.score = 0;
+          playerState.chances = 3;
+          playerState.questions[0] = q;
+          setupTabLeave(pRoomRef, code, pid);
+          showScreen('player-game');
+          startPlayerQuestion();
+        } else if (qIdx > playerState.currentQ) {
+          playerState.currentQ = qIdx;
+          playerState.chances = 3;
+          playerState.questions[qIdx] = q;
+          clearInterval(playerTimerInterval); clearInterval(autoNextTimer);
+          startPlayerQuestion();
+        }
+      };
+      cqRef.on('value', cqFn);
+      myListeners.push({ ref: cqRef, evt: 'value', fn: cqFn });
+
+      // 3. Watch questionStartTime for timer sync
+      const qstRef = pRoomRef.child('questionStartTime');
+      const qstFn = snap => { if (playerState) playerState.questionStartTime = snap.val(); };
+      qstRef.on('value', qstFn);
+      myListeners.push({ ref: qstRef, evt: 'value', fn: qstFn });
+
+      // 4. Watch gameoverPlayers (written by host on game end, avoids downloading all players mid-game)
+      const goRef = pRoomRef.child('gameoverPlayers');
+      const goFn = snap => {
+        const players = snap.val();
+        if (!players || !playerState || playerState.currentQ < 0) return;
+        clearInterval(playerTimerInterval);
+        clearInterval(autoNextTimer);
+        showPlayerGameOver(players);
+      };
+      goRef.on('value', goFn);
+      myListeners.push({ ref: goRef, evt: 'value', fn: goFn });
 
       // Waiting room player list
       const plRef = pRoomRef.child('players');
