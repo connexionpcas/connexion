@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>CONNEXiON 🎮 — Multiplayer</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
     rel="stylesheet" />
@@ -45,31 +45,6 @@
       font-family: 'Nunito', sans-serif;
       background: var(--bg);
       color: var(--text)
-    }
-
-    /* ── SETUP BANNER ── */
-    .setup-banner {
-      background: linear-gradient(135deg, rgba(247, 37, 133, .15), rgba(114, 9, 183, .15));
-      border: 1.5px solid rgba(247, 37, 133, .4);
-      border-radius: 12px;
-      padding: 14px 16px;
-      font-size: 13px;
-      line-height: 1.7;
-      margin-bottom: 14px;
-      color: var(--text)
-    }
-
-    .setup-banner strong {
-      color: var(--neon)
-    }
-
-    .setup-banner code {
-      background: rgba(255, 255, 255, .1);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 12px;
-      color: var(--yellow)
     }
 
     /* ── TAB BAR ── */
@@ -585,18 +560,18 @@
     /* ── TOAST ── */
     .toast {
       position: fixed;
-      top: 70px;
+      bottom: 28px;
       left: 50%;
-      transform: translateX(-50%) translateY(-80px);
-      background: var(--card);
+      transform: translateX(-50%) translateY(80px);
+      background: var(--card2);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 12px 24px;
       font-weight: 700;
       font-size: 14px;
       z-index: 999;
-      transition: transform .3s;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+      transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .5);
       text-align: center;
       max-width: 290px;
       pointer-events: none
@@ -1264,240 +1239,304 @@
       font-weight: 700;
     }
 
-    .conn-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 10px
+    /* ══ INLINE-STYLE REPLACEMENTS ══ */
+
+    /* Utility: hidden (replaces style="display:none") */
+    .hidden {
+      display: none !important;
     }
 
-    .conn-badge.connected {
-      background: rgba(6, 214, 160, .15);
-      color: var(--green);
-      border: 1px solid rgba(6, 214, 160, .3)
+    /* Utility: text colours */
+    .txt-green {
+      color: var(--green)
     }
 
-    .conn-badge.disconnected {
-      background: rgba(239, 35, 60, .15);
-      color: var(--red);
-      border: 1px solid rgba(239, 35, 60, .3)
+    .txt-yellow {
+      color: var(--yellow)
     }
 
-    .conn-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: currentColor
+    .txt-red {
+      color: var(--red)
     }
 
-    /* ══ RULES SCREEN ══ */
-    #player-rules {
-      padding: 0 !important;
-      display: none;
+    .txt-muted {
+      color: var(--muted)
+    }
+
+    .txt-yellow-bold {
+      color: var(--yellow);
+      font-weight: 700
+    }
+
+    /* Password field wrapper */
+    .pwd-wrap {
+      position: relative;
+      margin-bottom: 12px
+    }
+
+    .pwd-input {
+      margin-bottom: 0 !important;
+      padding-right: 48px
+    }
+
+    .pwd-eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--muted);
+      padding: 0;
+      line-height: 1
+    }
+
+    /* How It Works card */
+    .card-how-it-works {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8
+    }
+
+    .card-title-sm {
+      font-size: 15px
+    }
+
+    /* Generic padded card */
+    .card-padded {
+      padding: 14px
+    }
+
+    /* Card with no horizontal padding */
+    .card-no-hpad {
+      padding: 0 14px
+    }
+
+    /* Rules card */
+    .card-rules {
+      padding: 18px 16px
+    }
+
+    /* Action buttons column */
+    .action-btns {
+      margin-top: 12px;
+      display: flex;
       flex-direction: column;
+      gap: 8px
     }
-    #player-rules.active {
-      display: flex !important;
+
+    /* Large button */
+    .btn-lg {
+      font-size: 16px
     }
+
+    /* Button with top margin */
+    .btn-mt {
+      margin-top: 8px
+    }
+
+    /* Tight hero (less bottom padding) */
+    .hero-tight {
+      padding-bottom: 6px
+    }
+
+    /* Game-over hero */
+    .hero-go {
+      padding-bottom: 16px
+    }
+
+    /* Host-hint badge (starts hidden) */
+    .host-hint-badge.hidden {
+      display: none
+    }
+
+    /* MVP section padding */
+    .mvp-pad {
+      padding-bottom: 4px
+    }
+
+    /* Player join: uppercase room code input */
+    .input-upper {
+      text-transform: uppercase
+    }
+
+    /* Rules screen header */
     .rules-header {
-      padding: 16px 18px 0;
-      flex-shrink: 0;
       text-align: center;
+      padding: 6px 0 14px
     }
-    .rules-header h2 {
+
+    .rules-title {
       font-family: 'Fredoka One', cursive;
       font-size: 22px;
       background: linear-gradient(135deg, var(--neon), var(--accent));
       -webkit-background-clip: text;
       background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-text-fill-color: transparent
     }
-    .rules-header p {
+
+    .rules-subtitle {
       color: var(--muted);
       font-size: 12px;
-      margin-top: 3px;
+      margin-top: 3px
     }
-    /* tab pills */
-    .r-tab-wrap {
-      padding: 10px 16px 0;
-      flex-shrink: 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .r-tab-wrap::-webkit-scrollbar { display: none; }
-    .r-tab-strip {
-      display: flex;
-      gap: 7px;
-      width: max-content;
-      min-width: 100%;
-      justify-content: center;
-    }
-    .r-tab-pill {
-      padding: 7px 13px;
-      border-radius: 99px;
-      border: 1.5px solid var(--border);
-      background: var(--card);
-      color: var(--muted);
-      font-family: 'Nunito', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all .25s;
-    }
-    .r-tab-pill.active {
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      border-color: transparent;
-      color: #fff;
-      box-shadow: 0 4px 18px rgba(247,37,133,.35);
-    }
-    /* slide track */
-    .r-slides-outer {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-      margin-top: 10px;
-    }
-    .r-slides-track {
-      display: flex;
-      height: 100%;
-      transition: transform .36s cubic-bezier(.4,0,.2,1);
-    }
-    .r-slide {
-      min-width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      padding: 4px 16px 100px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,.08) transparent;
-    }
-    .r-slide::-webkit-scrollbar { width: 3px; }
-    .r-slide::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 99px; }
-    /* rule cards inside rules screen */
-    .r-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 10px;
-      position: relative;
-      overflow: hidden;
-      animation: slideUp .35s ease both;
-    }
-    .r-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--accent2), var(--accent), var(--neon));
-      opacity: 0; transition: opacity .3s;
-    }
-    .r-card:hover::before { opacity: 1; }
-    .r-card-icon { font-size: 26px; margin-bottom: 8px; display: block; }
-    .r-card-title {
-      font-family: 'Fredoka One', cursive;
-      font-size: 15px;
-      color: var(--text);
-      margin-bottom: 7px;
-    }
-    .r-card-body { font-size: 13px; color: var(--muted); line-height: 1.7; }
-    .r-card-body strong { color: var(--text); font-weight: 700; }
-    /* hero card */
-    .r-hero-card {
-      background: linear-gradient(135deg, rgba(114,9,183,.25), rgba(247,37,133,.2));
-      border: 1px solid rgba(247,37,133,.25);
-      border-radius: 16px;
-      padding: 20px 16px;
-      margin-bottom: 10px;
+
+    /* Player waiting screen */
+    .card-waiting {
       text-align: center;
+      padding: 32px 20px
     }
-    .r-hero-emoji { font-size: 44px; margin-bottom: 8px; }
-    .r-hero-title {
+
+    .wait-emoji {
+      font-size: 56px;
+      margin-bottom: 12px;
+      animation: pulse 1.5s infinite
+    }
+
+    .wait-name {
       font-family: 'Fredoka One', cursive;
-      font-size: 20px;
-      background: linear-gradient(135deg,#fff,var(--accent));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 5px;
+      font-size: 22px;
+      color: var(--neon)
     }
-    .r-hero-sub { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
-    /* steps */
-    .r-steps { display: flex; flex-direction: column; gap: 9px; margin-top: 4px; }
-    .r-step { display: flex; align-items: flex-start; gap: 10px; }
-    .r-step-num {
-      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
+
+    .wait-sub {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 14px
+    }
+
+    .wait-room {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    /* Answer input (no bottom margin inside area) */
+    .answer-input {
+      margin-bottom: 0 !important
+    }
+
+    /* Submit answer button top margin */
+    .btn-submit-ans {
+      margin-top: 10px
+    }
+
+    /* Game-over card / content */
+    .card-go-center {
+      text-align: center;
+      padding: 24px
+    }
+
+    .go-emoji {
+      font-size: 52px;
+      margin-bottom: 10px
+    }
+
+    .go-title {
       font-family: 'Fredoka One', cursive;
-      font-size: 12px; display: flex; align-items: center; justify-content: center; color: #fff;
+      font-size: 22px;
+      color: var(--neon)
     }
-    .r-step-text { font-size: 13px; color: var(--muted); line-height: 1.6; padding-top: 2px; }
-    .r-step-text strong { color: var(--text); }
-    /* score rows */
-    .r-score-rows { display: flex; flex-direction: column; gap: 7px; margin-top: 4px; }
-    .r-score-row {
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(255,255,255,.03); border: 1px solid var(--border);
-      border-radius: 10px; padding: 9px 12px; gap: 10px;
+
+    .go-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.6
     }
-    .r-score-left { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted); }
-    .r-score-left .ico { font-size: 17px; }
-    .r-score-pts { font-family: 'Fredoka One', cursive; font-size: 14px; white-space: nowrap; }
-    /* hints timeline */
-    .r-timeline { position: relative; padding-left: 20px; margin-top: 4px; }
-    .r-timeline::before {
-      content: ''; position: absolute; left: 5px; top: 5px; bottom: 5px; width: 2px;
-      background: linear-gradient(to bottom, var(--accent2), var(--neon)); border-radius: 99px;
+
+    /* ══ RULES SCREEN ══ */
+    /* ── RULES SCREEN (single-card) ── */
+    .rules-section {
+      margin-bottom: 14px;
     }
-    .r-t-item { position: relative; margin-bottom: 14px; }
-    .r-t-item:last-child { margin-bottom: 0; }
-    .r-t-dot {
-      position: absolute; left: -17px; top: 2px;
-      width: 9px; height: 9px; border-radius: 50%;
-      border: 2px solid var(--neon); background: var(--bg);
+
+    .rules-section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 13px;
+      color: var(--neon);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+      padding-left: 2px;
     }
-    .r-t-time { font-family: 'Fredoka One', cursive; font-size: 10px; color: var(--neon); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 2px; }
-    .r-t-label { font-size: 13px; color: var(--muted); line-height: 1.5; }
-    .r-t-label strong { color: var(--text); }
-    /* hearts */
-    .r-hearts-row { display: flex; gap: 5px; margin: 8px 0 3px; }
-    .r-heart-pip { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
-    .r-heart-pip.alive { background: rgba(247,37,133,.15); border: 1.5px solid rgba(247,37,133,.4); }
-    .r-heart-pip.dead  { background: rgba(255,255,255,.04); border: 1.5px solid var(--border); opacity: .35; }
-    /* warn box */
+
+    .rules-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+    }
+
+    .rules-row:last-child {
+      border-bottom: none;
+    }
+
+    .rules-row-ico {
+      font-size: 22px;
+      flex-shrink: 0;
+      width: 28px;
+      text-align: center;
+      margin-top: 1px;
+    }
+
+    .rules-row-text {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .rules-row-text strong {
+      color: var(--text);
+    }
+
+    .rules-score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 4px;
+    }
+
+    .rules-score-item {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .rules-score-item .ico {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
     .r-warn-box {
-      background: rgba(239,35,60,.08); border: 1.5px solid rgba(239,35,60,.3);
-      border-radius: 11px; padding: 11px 13px; margin-top: 7px;
-      font-size: 12.5px; color: #ff8fa3; line-height: 1.6;
-      display: flex; gap: 9px; align-items: flex-start;
+      background: rgba(239, 35, 60, .08);
+      border: 1.5px solid rgba(239, 35, 60, .3);
+      border-radius: 11px;
+      padding: 11px 13px;
+      margin-top: 4px;
+      font-size: 12.5px;
+      color: #ff8fa3;
+      line-height: 1.6;
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
     }
-    .r-warn-ico { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
-    /* mvp grid */
-    .r-mvp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 4px; }
-    .r-mvp-item { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 11px; padding: 11px; text-align: center; }
-    .r-mvp-ico { font-size: 22px; margin-bottom: 3px; }
-    .r-mvp-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
-    .r-mvp-label strong { display: block; font-size: 12px; color: var(--text); margin-bottom: 1px; }
-    /* tag */
-    .r-tag {
-      display: inline-block;
-      background: rgba(76,201,240,.12); border: 1px solid rgba(76,201,240,.3);
-      color: var(--neon); font-size: 10px; font-weight: 700;
-      padding: 2px 7px; border-radius: 99px; margin-bottom: 7px;
+
+    .r-warn-ico {
+      font-size: 17px;
+      flex-shrink: 0;
+      margin-top: 1px;
     }
-    /* nav dots */
-    .r-dots { display: flex; justify-content: center; gap: 5px; padding: 8px 0 6px; flex-shrink: 0; }
-    .r-dot { width: 6px; height: 6px; border-radius: 99px; background: var(--border); transition: all .3s; cursor: pointer; }
-    .r-dot.active { width: 18px; background: var(--accent); }
-    .r-swipe { text-align: center; font-size: 10px; color: var(--muted); padding-bottom: 3px; flex-shrink: 0; opacity: .55; }
-    /* start button fixed at bottom */
-    .r-start-wrap {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 10px 16px 16px;
-      background: linear-gradient(to top, var(--bg) 70%, transparent);
-      pointer-events: none;
-    }
+
     .r-start-btn {
       width: 100%;
       padding: 15px;
@@ -1512,11 +1551,14 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 6px 24px rgba(6,214,160,.35);
+      box-shadow: 0 6px 24px rgba(6, 214, 160, .35);
       transition: transform .2s, box-shadow .2s;
-      pointer-events: all;
+      margin-top: 6px;
     }
-    .r-start-btn:active { transform: scale(.97); box-shadow: 0 2px 10px rgba(6,214,160,.2); }
+
+    .r-start-btn:active {
+      transform: scale(.97);
+    }
 
     /* ── LOADING ── */
     .loading-overlay {
@@ -1583,7 +1625,7 @@
     <div class="abort-emoji">🚫</div>
     <h2>Session Aborted!</h2>
     <p>You left the game tab.<br>Your session has been paused.</p>
-    <button class="rejoin-btn" id="rejoin-btn" onclick="requestRejoin()" style="display:none">🔄 Request to
+    <button class="rejoin-btn" id="rejoin-btn" onclick="requestRejoin()" class="hidden">🔄 Request to
       Rejoin</button>
     <div class="rejoin-status" id="rejoin-status"></div>
   </div>
@@ -1608,15 +1650,14 @@
     <div class="card">
       <div class="card-title">🔐 Host Login</div>
       <input type="text" id="host-username" placeholder="Username" />
-      <div style="position:relative;margin-bottom:12px">
-        <input type="password" id="host-password" placeholder="Password" style="margin-bottom:0;padding-right:48px" />
-        <button onclick="togglePwd()" id="pwd-eye"
-          style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);padding:0;line-height:1">👁️</button>
+      <div class="pwd-wrap">
+        <input type="password" id="host-password" placeholder="Password" class="pwd-input" />
+        <button onclick="togglePwd()" id="pwd-eye" class="pwd-eye-btn">👁️</button>
       </div>
       <button class="btn btn-primary" onclick="hostLogin()">🚀 Login & Create Room</button>
     </div>
-    <div class="card" style="font-size:13px;color:var(--muted);line-height:1.8">
-      <div class="card-title" style="font-size:15px">📋 How It Works</div>
+    <div class="card card-how-it-works">
+      <div class="card-title card-title-sm">📋 How It Works</div>
       1. Login and create a room<br>
       2. Share the room code with your students<br>
       3. Students open this page on their PC → Player tab<br>
@@ -1649,14 +1690,14 @@
       <div class="pill">Players <span id="hd-player-count">0</span></div>
       <div class="pill">⏱️ <span id="hd-timer">30</span>s</div>
     </div>
-    <div class="card" style="padding:14px">
+    <div class="card card-padded">
       <div class="q-number" id="hd-q-label">Question 1 of 80</div>
       <div class="clue-chips" id="hd-clue-chips"></div>
       <div class="host-answer-box">
         <span class="ans-label">Answer</span>
         <span class="ans-word" id="hd-answer">—</span>
       </div>
-      <div id="hd-hint-badge" class="host-hint-badge" style="display:none">
+      <div id="hd-hint-badge" class="host-hint-badge hidden">
         💡 <span id="hd-hint-text"></span>
       </div>
     </div>
@@ -1666,16 +1707,16 @@
       <button class="dash-tab" onclick="showDashTab('players',event)">👥 Players</button>
     </div>
     <div id="dash-scores" class="dash-panel">
-      <div class="card" style="padding:14px" id="scores-list"></div>
+      <div class="card card-padded" id="scores-list"></div>
     </div>
-    <div id="dash-answers" class="dash-panel" style="display:none">
-      <div class="card" style="padding:14px" id="answers-list"></div>
+    <div id="dash-answers" class="dash-panel hidden">
+      <div class="card card-padded" id="answers-list"></div>
     </div>
-    <div id="dash-players" class="dash-panel" style="display:none">
-      <div class="card" style="padding:0 14px" id="players-list"></div>
+    <div id="dash-players" class="dash-panel hidden">
+      <div class="card card-no-hpad" id="players-list"></div>
     </div>
-    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-secondary" style="font-size:16px" onclick="hostForceNext()">⏭️ Force Next Question</button>
+    <div class="action-btns">
+      <button class="btn btn-secondary btn-lg" onclick="hostForceNext()">⏭️ Force Next Question</button>
       <button class="end-game-btn" onclick="confirmEndGame()">🏁 End Game & See Results</button>
       <button class="btn btn-danger" onclick="confirmTerminate()">🗑️ Terminate Room</button>
     </div>
@@ -1683,11 +1724,11 @@
 
   <!-- ═══ HOST: FINAL DASHBOARD ═══ -->
   <div class="screen" id="host-gameover">
-    <div class="hero" style="padding-bottom:6px">
+    <div class="hero hero-tight">
       <h1>🏁 Final Results</h1>
       <p id="host-go-sub">Game completed</p>
     </div>
-    <div class="card" style="padding:14px">
+    <div class="card card-padded">
       <div class="card-title">🏆 Podium</div>
       <div class="podium" id="host-podium"></div>
     </div>
@@ -1697,15 +1738,15 @@
       <button class="dash-tab" onclick="showFinalTab('mvp',event)">⭐ MVPs</button>
     </div>
     <div id="final-scoreboard" class="final-panel">
-      <div class="card" style="padding:14px" id="host-final-scores"></div>
+      <div class="card card-padded" id="host-final-scores"></div>
     </div>
-    <div id="final-performance" class="final-panel" style="display:none">
-      <div class="card" style="padding:14px" id="host-final-perf"></div>
+    <div id="final-performance" class="final-panel hidden">
+      <div class="card card-padded" id="host-final-perf"></div>
     </div>
-    <div id="final-mvp" class="final-panel" style="display:none">
-      <div id="host-final-mvp" style="padding-bottom:4px"></div>
+    <div id="final-mvp" class="final-panel hidden">
+      <div id="host-final-mvp" class="mvp-pad"></div>
     </div>
-    <button class="btn btn-primary" onclick="hostNewGame()" style="margin-top:8px">🔄 New Room</button>
+    <button class="btn btn-primary btn-mt" onclick="hostNewGame()">🔄 New Room</button>
     <button class="btn btn-danger" onclick="confirmTerminate()">🗑️ Exit</button>
   </div>
 
@@ -1719,233 +1760,88 @@
     <div class="card">
       <div class="card-title">🕹️ Join a Room</div>
       <input type="text" id="player-name" placeholder="Your name" maxlength="20" />
-      <input type="text" id="player-room-code" placeholder="Room code from HOST" style="text-transform:uppercase" />
+      <input type="text" id="player-room-code" placeholder="Room code from HOST" class="input-upper" />
       <button class="btn btn-secondary" onclick="playerJoin()">🎮 Join & Play!</button>
-    </div>
-    <div class="card" style="font-size:13px;color:var(--muted);line-height:1.9">
-      <div class="card-title" style="font-size:15px">📖 Game Rules</div>
-      ❤️❤️❤️ 3 chances per question<br>
-      ⏱️ <strong style="color:var(--yellow)">30 seconds</strong> to answer each puzzle<br>
-      ✅ Correct answer earns points + ⚡ Speed bonus for fast answers<br>
-      ❌ Wrong guess = lose 1 chance<br>
-      💔 Lose ALL chances = <strong style="color:var(--red)">score deduction!</strong><br>
-      🚫 Leaving tab = session aborted!<br>
-      💡 Hints unlock as time runs out<br>
-      🏆 <strong style="color:var(--neon)">Scores &amp; ranks shown on host screen only</strong>
     </div>
   </div>
 
   <!-- ═══ PLAYER: RULES ═══ -->
   <div class="screen" id="player-rules">
-    <!-- Header -->
     <div class="rules-header">
-      <h2>CONNEXiON 🎮 — How to Play</h2>
-      <p>Read the rules, then click <strong style="color:var(--green)">Let's Play!</strong> to enter the lobby</p>
+      <div class="rules-title">📖 How to Play</div>
+      <div class="rules-subtitle">Read the rules, then tap <strong class="txt-green">Let's Play!</strong></div>
     </div>
 
-    <!-- Tab pills -->
-    <div class="r-tab-wrap">
-      <div class="r-tab-strip" id="rTabStrip">
-        <button class="r-tab-pill active"  onclick="rGoTo(0)">🎯 Overview</button>
-        <button class="r-tab-pill"         onclick="rGoTo(1)">🕹️ Joining</button>
-        <button class="r-tab-pill"         onclick="rGoTo(2)">⏱️ Gameplay</button>
-        <button class="r-tab-pill"         onclick="rGoTo(3)">🏆 Scoring</button>
-        <button class="r-tab-pill"         onclick="rGoTo(4)">🏁 End Game</button>
+    <div class="card card-rules">
+
+      <!-- Gameplay -->
+      <div class="rules-section">
+        <div class="rules-section-title">🧩 Gameplay</div>
+        <div class="rules-row">
+          <div class="rules-row-ico">🎮</div>
+          <div class="rules-row-text">You'll see <strong>2 emojis</strong> — join their names to make a compound word.
+            Type your answer and submit!</div>
+        </div>
+        <div class="rules-row">
+          <div class="rules-row-ico">☀️➕🌅</div>
+          <div class="rules-row-text">Example: <strong>SUN + SET = SUNSET</strong> &nbsp;·&nbsp; <strong>MINE + CRAFT =
+              MINECRAFT</strong></div>
+        </div>
+        <div class="rules-row">
+          <div class="rules-row-ico">⏱️</div>
+          <div class="rules-row-text"><strong>30 seconds</strong> per question · <strong>80 questions</strong> total ·
+            Not case-sensitive</div>
+        </div>
       </div>
+
+      <!-- Chances -->
+      <div class="rules-section">
+        <div class="rules-section-title">❤️ Chances</div>
+        <div class="rules-row">
+          <div class="rules-row-ico">❤️</div>
+          <div class="rules-row-text"><strong>3 chances</strong> per question. Each wrong guess costs one heart.</div>
+        </div>
+        <div class="rules-row">
+          <div class="rules-row-ico">💡</div>
+          <div class="rules-row-text">Hints unlock as time runs out — <strong>letter count</strong> at 12s left,
+            <strong>first &amp; last letter</strong> at 5s left.
+          </div>
+        </div>
+      </div>
+
+      <!-- Scoring -->
+      <div class="rules-section">
+        <div class="rules-section-title">🏆 Scoring</div>
+        <div class="rules-score-grid">
+          <div class="rules-score-item"><span class="ico">✅</span><span>Correct = <strong
+                class="txt-green">+Points</strong></span></div>
+          <div class="rules-score-item"><span class="ico">⚡</span><span>Fast answer = <strong
+                class="txt-yellow">+Bonus</strong></span></div>
+          <div class="rules-score-item"><span class="ico">⏱️</span><span>Timeout = <strong class="txt-muted">0
+                pts</strong></span></div>
+          <div class="rules-score-item"><span class="ico">💔</span><span>All 3 wrong = <strong class="txt-red">−5
+                pts</strong></span></div>
+        </div>
+      </div>
+
+      <!-- Warning -->
+      <div class="r-warn-box">
+        <div class="r-warn-ico">⚠️</div>
+        <div><strong>Stay on this page!</strong> Switching tabs during the game automatically aborts your session.</div>
+      </div>
+
     </div>
 
-    <!-- Slides -->
-    <div class="r-slides-outer" id="rSlidesOuter">
-      <div class="r-slides-track" id="rSlidesTrack">
-
-        <!-- SLIDE 0: OVERVIEW -->
-        <div class="r-slide">
-          <div class="r-hero-card">
-            <div class="r-hero-emoji">🧩</div>
-            <div class="r-hero-title">What is CONNEXiON?</div>
-            <div class="r-hero-sub">A live multiplayer emoji word game. Look at the emoji clues and guess the compound word they form — before time runs out!</div>
-          </div>
-          <div class="r-card">
-            <span class="r-card-icon">👀</span>
-            <div class="r-card-title">The Concept</div>
-            <div class="r-card-body">
-              Each round shows <strong>2 emojis</strong> whose names join syllabically to make a word.<br><br>
-              Example: <strong>☀️ SUN + 🌅 SET = SUNSET</strong> &nbsp;|&nbsp; <strong>⛏️ MINE + 🏗️ CRAFT = MINECRAFT</strong>
-            </div>
-          </div>
-          <div class="r-card">
-            <span class="r-card-icon">📱</span>
-            <div class="r-card-title">What You Need</div>
-            <div class="r-card-body">
-              <strong>Students:</strong> Any PC or laptop with a browser — no installation needed.<br><br>
-              <strong>Teacher/Host:</strong> One device to host and monitor the live dashboard.
-            </div>
-          </div>
-          <div class="r-card">
-            <span class="r-card-icon">🔢</span>
-            <div class="r-card-title">Game Structure</div>
-            <div class="r-card-body">
-              <strong>80 questions</strong> per game &bull; Each has a <strong>30-second timer</strong> &bull; <strong>3 chances</strong> per question &bull; Host can skip or end anytime.
-            </div>
-          </div>
-        </div>
-
-        <!-- SLIDE 1: JOINING -->
-        <div class="r-slide">
-          <div class="r-card">
-            <span class="r-tag">FOR STUDENTS</span>
-            <div class="r-card-title">🕹️ How to Join</div>
-            <div class="r-steps">
-              <div class="r-step"><div class="r-step-num">1</div><div class="r-step-text">Open the game link and click the <strong>Player tab</strong></div></div>
-              <div class="r-step"><div class="r-step-num">2</div><div class="r-step-text">Enter your <strong>name</strong> and the <strong>Room Code</strong> from your teacher</div></div>
-              <div class="r-step"><div class="r-step-num">3</div><div class="r-step-text">Read these rules, then click <strong>Let's Play!</strong></div></div>
-              <div class="r-step"><div class="r-step-num">4</div><div class="r-step-text">Wait in the <strong>lobby</strong> until the host starts the game</div></div>
-            </div>
-          </div>
-          <div class="r-card">
-            <span class="r-tag">FOR THE HOST</span>
-            <div class="r-card-title">🎯 How to Host</div>
-            <div class="r-steps">
-              <div class="r-step"><div class="r-step-num">1</div><div class="r-step-text">Login with the <strong>host password</strong></div></div>
-              <div class="r-step"><div class="r-step-num">2</div><div class="r-step-text">A unique <strong>Room Code</strong> is generated — share it with students</div></div>
-              <div class="r-step"><div class="r-step-num">3</div><div class="r-step-text">Wait for players to join, then click <strong>Start Game</strong></div></div>
-              <div class="r-step"><div class="r-step-num">4</div><div class="r-step-text">Monitor <strong>scores, answers and player status</strong> live</div></div>
-            </div>
-          </div>
-          <div class="r-card">
-            <div class="r-warn-box">
-              <div class="r-warn-ico">⚠️</div>
-              <div><strong>Stay on the page!</strong> Switching tabs during the game aborts your session automatically.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SLIDE 2: GAMEPLAY -->
-        <div class="r-slide">
-          <div class="r-card">
-            <span class="r-card-icon">🧩</span>
-            <div class="r-card-title">Each Question</div>
-            <div class="r-card-body">
-              You'll see <strong>2 emojis</strong> on screen. Join their names to guess the word and type your answer. Not case-sensitive!
-            </div>
-          </div>
-          <div class="r-card">
-            <div class="r-card-title">❤️ Your 3 Chances</div>
-            <div class="r-card-body" style="margin-bottom:8px">Each question gives <strong>3 attempts</strong>. Wrong answers cost one heart.</div>
-            <div class="r-hearts-row">
-              <div class="r-heart-pip alive">❤️</div>
-              <div class="r-heart-pip alive">❤️</div>
-              <div class="r-heart-pip alive">❤️</div>
-            </div>
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">All 3 chances at the start</div>
-            <div class="r-hearts-row" style="margin-top:10px">
-              <div class="r-heart-pip alive">❤️</div>
-              <div class="r-heart-pip dead">❤️</div>
-              <div class="r-heart-pip dead">❤️</div>
-            </div>
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">After 2 wrong — 1 chance left, final hint unlocked</div>
-          </div>
-          <div class="r-card">
-            <div class="r-card-title">💡 Auto Hints</div>
-            <div class="r-card-body" style="margin-bottom:8px">Hints unlock automatically as time runs down!</div>
-            <div class="r-timeline">
-              <div class="r-t-item">
-                <div class="r-t-dot"></div>
-                <div class="r-t-time">Start</div>
-                <div class="r-t-label">🏷️ <strong>Category hint</strong> always visible</div>
-              </div>
-              <div class="r-t-item">
-                <div class="r-t-dot"></div>
-                <div class="r-t-time">12 seconds left</div>
-                <div class="r-t-label">🔤 <strong>Letter count</strong> hint unlocks</div>
-              </div>
-              <div class="r-t-item">
-                <div class="r-t-dot"></div>
-                <div class="r-t-time">5 seconds left</div>
-                <div class="r-t-label">🔑 <strong>First &amp; last letter</strong> hint unlocks</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SLIDE 3: SCORING -->
-        <div class="r-slide">
-          <div class="r-card">
-            <div class="r-card-title">📊 Points System</div>
-            <div class="r-card-body" style="margin-bottom:10px">Points are tracked by the host and revealed at the end. Focus on answering correctly and quickly!</div>
-            <div class="r-score-rows">
-              <div class="r-score-row"><div class="r-score-left"><span class="ico">✅</span>Correct answer</div><div class="r-score-pts" style="color:var(--green)">Points ✓</div></div>
-              <div class="r-score-row"><div class="r-score-left"><span class="ico">⚡</span>Speed bonus</div><div class="r-score-pts" style="color:var(--yellow)">Bonus ✓</div></div>
-              <div class="r-score-row"><div class="r-score-left"><span class="ico">⏱️</span>Time runs out</div><div class="r-score-pts" style="color:var(--muted)">No points</div></div>
-              <div class="r-score-row"><div class="r-score-left"><span class="ico">💔</span>All 3 chances used</div><div class="r-score-pts" style="color:var(--red)">Deduction</div></div>
-            </div>
-          </div>
-          <div class="r-card">
-            <span class="r-card-icon">⚡</span>
-            <div class="r-card-title">Speed Bonus</div>
-            <div class="r-card-body">Answer quickly to earn a <strong>speed bonus</strong> on top of your correct-answer points. The faster you answer, the higher your bonus!</div>
-          </div>
-          <div class="r-card">
-            <span class="r-card-icon">💔</span>
-            <div class="r-card-title">Deduction Warning</div>
-            <div class="r-card-body">Using all <strong>3 chances</strong> without a correct answer causes a <strong>score deduction</strong>. Sometimes skipping (letting the timer run) is smarter than guessing wildly!</div>
-          </div>
-        </div>
-
-        <!-- SLIDE 4: END GAME -->
-        <div class="r-slide">
-          <div class="r-card">
-            <span class="r-card-icon">🏁</span>
-            <div class="r-card-title">How the Game Ends</div>
-            <div class="r-card-body">Ends after all <strong>80 questions</strong>, or when the host ends it early. Final results are shown to everyone simultaneously.</div>
-          </div>
-          <div class="r-card">
-            <div class="r-card-title">🥇 Final Results</div>
-            <div class="r-card-body" style="margin-bottom:10px">After the game:</div>
-            <div class="r-steps">
-              <div class="r-step"><div class="r-step-num">🥇</div><div class="r-step-text"><strong>Podium</strong> — Top 3 on a live leaderboard</div></div>
-              <div class="r-step"><div class="r-step-num">📊</div><div class="r-step-text"><strong>Full scoreboard</strong> — Scores, correct answers & deductions</div></div>
-              <div class="r-step"><div class="r-step-num">📈</div><div class="r-step-text"><strong>Your stats</strong> — Correct, wrong, timeouts, deductions</div></div>
-            </div>
-          </div>
-          <div class="r-card">
-            <div class="r-card-title">🌟 MVP Awards</div>
-            <div class="r-mvp-grid">
-              <div class="r-mvp-item"><div class="r-mvp-ico">🏆</div><div class="r-mvp-label"><strong>Top Score</strong>Highest total points</div></div>
-              <div class="r-mvp-item"><div class="r-mvp-ico">🎯</div><div class="r-mvp-label"><strong>Most Correct</strong>Most right answers</div></div>
-              <div class="r-mvp-item"><div class="r-mvp-ico">⚡</div><div class="r-mvp-label"><strong>Best Accuracy</strong>Highest % correct</div></div>
-              <div class="r-mvp-item"><div class="r-mvp-ico">💚</div><div class="r-mvp-label"><strong>No Deductions</strong>Perfect composure</div></div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /r-slides-track -->
-    </div><!-- /r-slides-outer -->
-
-    <!-- Nav dots -->
-    <div class="r-dots" id="rDots">
-      <div class="r-dot active" onclick="rGoTo(0)"></div>
-      <div class="r-dot" onclick="rGoTo(1)"></div>
-      <div class="r-dot" onclick="rGoTo(2)"></div>
-      <div class="r-dot" onclick="rGoTo(3)"></div>
-      <div class="r-dot" onclick="rGoTo(4)"></div>
-    </div>
-    <div class="r-swipe">Click tabs or use arrow keys to navigate</div>
-
-    <!-- Fixed start button -->
-    <div class="r-start-wrap">
-      <button class="r-start-btn" onclick="rulesStart()">🎮 Let's Play!</button>
-    </div>
+    <button class="r-start-btn" onclick="rulesStart()">🎮 Let's Play!</button>
   </div>
 
   <!-- ═══ PLAYER: WAITING ═══ -->
   <div class="screen" id="player-waiting">
-    <div class="card" style="text-align:center;padding:32px 20px">
-      <div style="font-size:56px;margin-bottom:12px;animation:pulse 1.5s infinite">⏳</div>
-      <div style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--neon)" id="pw-name">Hello!</div>
-      <div style="color:var(--muted);margin-top:8px;font-size:14px">Waiting for host to start the game…</div>
-      <div style="margin-top:16px;font-size:13px;color:var(--muted)">Room: <span id="pw-room"
-          style="color:var(--yellow);font-weight:700">—</span></div>
+    <div class="card card-waiting">
+      <div class="wait-emoji">⏳</div>
+      <div class="wait-name" id="pw-name">Hello!</div>
+      <div class="wait-sub">Waiting for host to start the game…</div>
+      <div class="wait-room">Room: <span id="pw-room" class="txt-yellow-bold">—</span></div>
     </div>
     <div class="card">
       <div class="card-title">👥 Players in Room</div>
@@ -1960,7 +1856,7 @@
     <div class="q-progress">
       <div class="label" id="pg-q-label">Q 1/80</div>
       <div class="progress-bar">
-        <div class="progress-fill" id="pg-progress" style="width:1%"></div>
+        <div class="progress-fill" id="pg-progress"></div>
       </div>
     </div>
     <div class="solved-bar">
@@ -1978,7 +1874,7 @@
     <div class="chances" id="chances-display">
       <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
     </div>
-    <div id="game-card" class="card" style="padding:14px">
+    <div id="game-card" class="card card-padded">
       <div class="q-number" id="pg-q-number">QUESTION 1 OF 80</div>
       <div class="clue-chips" id="pg-clue-chips"></div>
       <div class="hint-box">
@@ -2001,29 +1897,29 @@
       <div id="answer-section">
         <div class="answer-area">
           <input type="text" id="player-answer" placeholder="Type your answer…" autocomplete="off" autocorrect="off"
-            spellcheck="false" style="margin-bottom:0" />
+            spellcheck="false" class="answer-input" />
           <button onclick="submitAnswer()">↩</button>
         </div>
-        <button class="btn btn-primary" style="margin-top:10px" onclick="submitAnswer()">Submit Answer</button>
+        <button class="btn btn-primary btn-submit-ans" onclick="submitAnswer()">Submit Answer</button>
       </div>
-      <div id="result-section" style="display:none"></div>
+      <div id="result-section" class="hidden"></div>
     </div>
   </div>
 
   <!-- ═══ PLAYER: GAME OVER ═══ -->
   <div class="screen" id="player-gameover">
-    <div class="hero" style="padding-bottom:16px">
+    <div class="hero hero-go">
       <h1>🏁 Game Over!</h1>
       <p id="final-rank-msg">Great game — check the host screen for results!</p>
     </div>
-    <div class="card" style="text-align:center;padding:24px">
-      <div style="font-size:52px;margin-bottom:10px" id="go-emoji">🎉</div>
-      <div style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--neon)">Well Played!</div>
-      <div style="color:var(--muted);font-size:13px;margin-top:8px;line-height:1.6">
-        Scores &amp; rankings are revealed<br>on the <strong style="color:var(--yellow)">host's screen</strong> 🏆
+    <div class="card card-go-center">
+      <div class="go-emoji" id="go-emoji">🎉</div>
+      <div class="go-title">Well Played!</div>
+      <div class="go-sub">
+        Scores &amp; rankings are revealed<br>on the <strong class="txt-yellow">host's screen</strong> 🏆
       </div>
     </div>
-    <div class="card" style="padding:14px">
+    <div class="card card-padded">
       <div class="card-title">📊 Your Stats</div>
       <div id="go-stats"></div>
     </div>
@@ -2039,130 +1935,128 @@
     const PUZZLES = [
 
       // ══ EASY COMPOUND WORDS ══ (simple 2-part compound words)
-      { images: ['sun','set'],       answer: 'SUNSET',      hint: 'End of the day sky' },
-      { images: ['star','fish'],     answer: 'STARFISH',    hint: '5-armed ocean creature' },
-      { images: ['moon','light'],    answer: 'MOONLIGHT',   hint: 'Night sky glow' },
-      { images: ['bee','hive'],      answer: 'BEEHIVE',     hint: 'Honeybee home' },
-      { images: ['rain','bow'],      answer: 'RAINBOW',     hint: 'Colourful arc after rain' },
-      { images: ['butter','fly'],    answer: 'BUTTERFLY',   hint: 'Winged nectar seeker' },
-      { images: ['book','mark'],     answer: 'BOOKMARK',    hint: 'Page saver' },
-      { images: ['water','melon'],   answer: 'WATERMELON',  hint: 'Summer green fruit' },
-      { images: ['key','board'],     answer: 'KEYBOARD',    hint: 'Type on this device' },
-      { images: ['sun','flower'],    answer: 'SUNFLOWER',   hint: 'Tall yellow bloom' },
-      { images: ['pan','cake'],      answer: 'PANCAKE',     hint: 'Breakfast stack with syrup' },
-      { images: ['birth','day'],     answer: 'BIRTHDAY',    hint: 'Annual celebration' },
-      { images: ['gold','fish'],     answer: 'GOLDFISH',    hint: 'Orange bowl pet' },
-      { images: ['fire','fly'],      answer: 'FIREFLY',     hint: 'Glowing night insect' },
-      { images: ['bed','room'],      answer: 'BEDROOM',     hint: 'Sleep space' },
-      { images: ['sun','glasses'],   answer: 'SUNGLASSES',  hint: 'UV eye protection' },
-      { images: ['rose','bud'],      answer: 'ROSEBUD',     hint: 'Unopened flower' },
-      { images: ['dragon','fly'],    answer: 'DRAGONFLY',   hint: 'Hovering water insect' },
-      { images: ['sea','shell'],     answer: 'SEASHELL',    hint: 'Beach treasure' },
-      { images: ['door','step'],     answer: 'DOORSTEP',    hint: 'Entrance threshold' },
-      { images: ['hot','dog'],       answer: 'HOTDOG',      hint: 'Sausage in a bun' },
-      { images: ['cheese','cake'],   answer: 'CHEESECAKE',  hint: 'Creamy baked dessert' },
-      { images: ['spring','time'],   answer: 'SPRINGTIME',  hint: 'Blooming warm season' },
-      { images: ['eye','lid'],       answer: 'EYELID',      hint: 'Blink cover' },
-      { images: ['ham','bird'],      answer: 'HUMMINGBIRD', hint: 'Tiny hovering bird — hum + ming' },
+      { images: ['sun', 'set'], answer: 'SUNSET', hint: 'End of the day sky' },
+      { images: ['star', 'fish'], answer: 'STARFISH', hint: '5-armed ocean creature' },
+      { images: ['moon', 'light'], answer: 'MOONLIGHT', hint: 'Night sky glow' },
+      { images: ['bee', 'hive'], answer: 'BEEHIVE', hint: 'Honeybee home' },
+      { images: ['rain', 'bow'], answer: 'RAINBOW', hint: 'Colourful arc after rain' },
+      { images: ['butter', 'fly'], answer: 'BUTTERFLY', hint: 'Winged nectar seeker' },
+      { images: ['book', 'mark'], answer: 'BOOKMARK', hint: 'Page saver' },
+      { images: ['water', 'melon'], answer: 'WATERMELON', hint: 'Summer green fruit' },
+      { images: ['key', 'board'], answer: 'KEYBOARD', hint: 'Type on this device' },
+      { images: ['sun', 'flower'], answer: 'SUNFLOWER', hint: 'Tall yellow bloom' },
+      { images: ['pan', 'cake'], answer: 'PANCAKE', hint: 'Breakfast stack with syrup' },
+      { images: ['birth', 'day'], answer: 'BIRTHDAY', hint: 'Annual celebration' },
+      { images: ['gold', 'fish'], answer: 'GOLDFISH', hint: 'Orange bowl pet' },
+      { images: ['fire', 'fly'], answer: 'FIREFLY', hint: 'Glowing night insect' },
+      { images: ['bed', 'room'], answer: 'BEDROOM', hint: 'Sleep space' },
+      { images: ['sun', 'glasses'], answer: 'SUNGLASSES', hint: 'UV eye protection' },
+      { images: ['rose', 'bud'], answer: 'ROSEBUD', hint: 'Unopened flower' },
+      { images: ['dragon', 'fly'], answer: 'DRAGONFLY', hint: 'Hovering water insect' },
+      { images: ['sea', 'shell'], answer: 'SEASHELL', hint: 'Beach treasure' },
+      { images: ['door', 'step'], answer: 'DOORSTEP', hint: 'Entrance threshold' },
+      { images: ['hot', 'dog'], answer: 'HOTDOG', hint: 'Sausage in a bun' },
+      { images: ['cheese', 'cake'], answer: 'CHEESECAKE', hint: 'Creamy baked dessert' },
+      { images: ['spring', 'time'], answer: 'SPRINGTIME', hint: 'Blooming warm season' },
+      { images: ['eye', 'lid'], answer: 'EYELID', hint: 'Blink cover' },
+      { images: ['ham', 'bird'], answer: 'HUMMINGBIRD', hint: 'Tiny hovering bird — hum + ming' },
 
       // ══ MEDIUM COMPOUND WORDS ══
-      { images: ['thunder','bolt'],  answer: 'THUNDERBOLT',    hint: 'Zeus\'s weapon' },
-      { images: ['fire','wall'],     answer: 'FIREWALL',       hint: 'Network security barrier' },
-      { images: ['wild','card'],     answer: 'WILDCARD',       hint: 'Unpredictable player' },
-      { images: ['under','world'],   answer: 'UNDERWORLD',     hint: 'Criminal realm' },
-      { images: ['super','hero'],    answer: 'SUPERHERO',      hint: 'Caped crimefighter' },
-      { images: ['gem','stone'],     answer: 'GEMSTONE',       hint: 'Precious mineral' },
-      { images: ['lion','heart'],    answer: 'LIONHEART',      hint: 'Extremely brave person' },
-      { images: ['sword','fish'],    answer: 'SWORDFISH',      hint: 'Long-billed ocean fish' },
-      { images: ['sweet','heart'],   answer: 'SWEETHEART',     hint: 'Beloved one' },
-      { images: ['back','stage'],    answer: 'BACKSTAGE',      hint: 'Behind the curtain' },
-      { images: ['dark','horse'],    answer: 'DARK HORSE',     hint: 'Surprise competitor' },
-      { images: ['black','board'],   answer: 'BLACKBOARD',     hint: 'Chalk-writing surface' },
-      { images: ['ice','break'],     answer: 'ICEBREAKER',     hint: 'Conversation starter' },
-      { images: ['moon','shine'],    answer: 'MOONSHINE',      hint: 'Illicit spirit or lunar glow' },
-      { images: ['over','night'],    answer: 'OVERNIGHT',      hint: 'All through the night' },
-      { images: ['blood','hound'],   answer: 'BLOODHOUND',     hint: 'Keen-scented tracker dog' },
-      { images: ['thunder','struck'],answer: 'THUNDERSTRUCK',  hint: 'Deeply astonished' },
-      { images: ['head','shot'],     answer: 'HEADSHOT',       hint: 'Portrait or sniper hit' },
-      { images: ['check','point'],   answer: 'CHECKPOINT',     hint: 'Save or verify spot' },
-      { images: ['shadow','box'],    answer: 'SHADOWBOX',      hint: 'Solo fight practice' },
-      { images: ['crystal','ball'],  answer: 'CRYSTAL BALL',   hint: 'Fortune teller\'s orb' },
-      { images: ['ghost','writer'],  answer: 'GHOSTWRITER',    hint: 'Unnamed author' },
-      { images: ['under','current'], answer: 'UNDERCURRENT',   hint: 'Hidden flow or influence' },
-      { images: ['fire','stone'],    answer: 'FIRESTONE',      hint: 'Sparking hard mineral' },
-      { images: ['diamond','back'],  answer: 'DIAMONDBACK',    hint: 'Patterned rattlesnake' },
+      { images: ['thunder', 'bolt'], answer: 'THUNDERBOLT', hint: 'The NEW AVENGERS' },
+      { images: ['fire', 'wall'], answer: 'FIREWALL', hint: 'Network security barrier' },
+      { images: ['wild', 'card'], answer: 'WILDCARD', hint: 'Unpredictable player' },
+      { images: ['under', 'world'], answer: 'UNDERWORLD', hint: 'Criminal realm' },
+      { images: ['super', 'hero'], answer: 'SUPERHERO', hint: 'Caped crimefighter' },
+      { images: ['gem', 'stone'], answer: 'GEMSTONE', hint: 'Precious mineral' },
+      { images: ['lion', 'heart'], answer: 'LIONHEART', hint: 'Extremely brave person' },
+      { images: ['sword', 'fish'], answer: 'SWORDFISH', hint: 'Long-billed ocean fish' },
+      { images: ['sweet', 'heart'], answer: 'SWEETHEART', hint: 'Beloved one' },
+      { images: ['back', 'stage'], answer: 'BACKSTAGE', hint: 'Behind the curtain' },
+      { images: ['dark', 'horse'], answer: 'DARK HORSE', hint: 'Surprise competitor' },
+      { images: ['black', 'board'], answer: 'BLACKBOARD', hint: 'Chalk-writing surface' },
+      { images: ['ice', 'break'], answer: 'ICEBREAKER', hint: 'Conversation starter' },
+      { images: ['moon', 'shine'], answer: 'MOONSHINE', hint: 'Illicit spirit or lunar glow' },
+      { images: ['over', 'night'], answer: 'OVERNIGHT', hint: 'All through the night' },
+      { images: ['blood', 'hound'], answer: 'BLOODHOUND', hint: 'Keen-scented tracker dog' },
+      { images: ['thunder', 'struck'], answer: 'THUNDERSTRUCK', hint: 'Deeply astonished' },
+      { images: ['head', 'shot'], answer: 'HEADSHOT', hint: 'Portrait or sniper hit' },
+      { images: ['check', 'point'], answer: 'CHECKPOINT', hint: 'Save or verify spot' },
+      { images: ['shadow', 'box'], answer: 'SHADOWBOX', hint: 'Solo fight practice' },
+      { images: ['crystal', 'ball'], answer: 'CRYSTAL BALL', hint: 'Fortune teller\'s orb' },
+      { images: ['ghost', 'writer'], answer: 'GHOSTWRITER', hint: 'Unnamed author' },
+      { images: ['under', 'current'], answer: 'UNDERCURRENT', hint: 'Hidden flow or influence' },
+      { images: ['fire', 'stone'], answer: 'FIRESTONE', hint: 'Sparking hard mineral' },
+      { images: ['diamond', 'back'], answer: 'DIAMONDBACK', hint: 'Patterned rattlesnake' },
 
       // ══ 🎮 GAMES THEMED ══
-      { images: ['mine','craft'],    answer: 'MINECRAFT',     hint: '⛏️ Block-building sandbox game' },
-      { images: ['fort','night'],    answer: 'FORTNITE',      hint: '🎮 Battle royale island game' },
-      { images: ['game','play'],     answer: 'GAMEPLAY',      hint: 'How a video game plays' },
-      { images: ['war','craft'],     answer: 'WARCRAFT',      hint: '🧝 Blizzard medieval strategy' },
-      { images: ['star','craft'],    answer: 'STARCRAFT',     hint: '🚀 Blizzard space RTS' },
-      { images: ['dead','shot'],     answer: 'DEADSHOT',      hint: '🎯 Perfect-aim DC villain' },
-      { images: ['night','fall'],    answer: 'NIGHTFALL',     hint: 'Destiny 2 strike mode' },
-      { images: ['ghost','ship'],    answer: 'GHOST SHIP',    hint: '👻 Abandoned vessel mystery' },
-      { images: ['speed','run'],     answer: 'SPEEDRUN',      hint: '🏃 Fastest game completion race' },
-      { images: ['power','up'],      answer: 'POWER UP',      hint: '⭐ Collectible boost in games' },
-      { images: ['battle','field'],  answer: 'BATTLEFIELD',   hint: '💥 EA military shooter series' },
-      { images: ['over','watch'],    answer: 'OVERWATCH',     hint: '🎯 Blizzard team hero shooter' },
-      { images: ['skull','cap'],     answer: 'SKULLCAP',      hint: 'Close-fitting head cover' },
-      { images: ['dragon','ball'],   answer: 'DRAGONBALL',    hint: '🐉 Goku\'s anime quest' },
-      { images: ['head','band'],     answer: 'HEADBAND',      hint: 'Elastic hair accessory' },
-      { images: ['fire','arms'],     answer: 'FIREARMS',      hint: 'Guns and weapons' },
-      { images: ['thunder','head'],  answer: 'THUNDERHEAD',   hint: 'Towering storm cloud' },
-      { images: ['blood','stone'],   answer: 'BLOODSTONE',    hint: 'Dark green gemstone' },
-      { images: ['over','lord'],     answer: 'OVERLORD',      hint: 'Supreme commander or ruler' },
-      { images: ['shadow','play'],   answer: 'SHADOWPLAY',    hint: 'Theatre with silhouettes' },
+      { images: ['mine', 'craft'], answer: 'MINECRAFT', hint: '⛏️ Block-building sandbox game' },
+      { images: ['fort', 'night'], answer: 'FORTNITE', hint: '🎮 Battle royale island game' },
+      { images: ['game', 'play'], answer: 'GAMEPLAY', hint: 'How a video game plays' },
+      { images: ['war', 'craft'], answer: 'WARCRAFT', hint: '🧝 Blizzard medieval strategy' },
+      { images: ['star', 'craft'], answer: 'STARCRAFT', hint: '🚀 Blizzard space RTS' },
+      { images: ['dead', 'shot'], answer: 'DEADSHOT', hint: '🎯 Perfect-aim DC villain' },
+      { images: ['night', 'fall'], answer: 'NIGHTFALL', hint: 'Destiny 2 strike mode' },
+      { images: ['ghost', 'ship'], answer: 'GHOST SHIP', hint: '👻 Abandoned vessel mystery' },
+      { images: ['speed', 'run'], answer: 'SPEEDRUN', hint: '🏃 Fastest game completion race' },
+      { images: ['power', 'up'], answer: 'POWER UP', hint: '⭐ Collectible boost in games' },
+      { images: ['battle', 'field'], answer: 'BATTLEFIELD', hint: '💥 EA military shooter series' },
+      { images: ['over', 'watch'], answer: 'OVERWATCH', hint: '🎯 Blizzard team hero shooter' },
+      { images: ['skull', 'cap'], answer: 'SKULLCAP', hint: 'Close-fitting head cover' },
+      { images: ['dragon', 'ball'], answer: 'DRAGONBALL', hint: '🐉 Goku\'s anime quest' },
+      { images: ['head', 'band'], answer: 'HEADBAND', hint: 'Elastic hair accessory' },
+      { images: ['fire', 'arms'], answer: 'FIREARMS', hint: 'Guns and weapons' },
+      { images: ['thunder', 'head'], answer: 'THUNDERHEAD', hint: 'Towering storm cloud' },
+      { images: ['blood', 'stone'], answer: 'BLOODSTONE', hint: 'Dark green gemstone' },
+      { images: ['shadow', 'fight'], answer: 'SHADOWFIGHT', hint: 'Theatre with silhouettes' },
 
       // ══ 🎬 TAMIL CINEMA THEMED ══
-      { images: ['super','star'],    answer: 'SUPERSTAR',     hint: '🌟 Rajinikanth\'s iconic title' },
-      { images: ['mind','beast'],    answer: 'MINDBEAST',     hint: '🧠 Wild intellect — Vijay\'s BEAST' },
-      { images: ['king','maker'],    answer: 'KINGMAKER',     hint: '👑 Kollywood political drama role' },
-      { images: ['war','lord'],      answer: 'WARLORD',       hint: '⚔️ Tamil action military ruler' },
-      { images: ['fire','brand'],    answer: 'FIREBRAND',     hint: '🔥 Passionate rebel hero' },
-      { images: ['silver','screen'], answer: 'SILVERSCREEN',  hint: '🎬 Tamil cinema world' },
-      { images: ['storm','rider'],   answer: 'STORM RIDER',   hint: '🌪️ Fast-action stunt hero' },
-      { images: ['night','rider'],   answer: 'NIGHT RIDER',   hint: '🌙 Nocturnal action hero' },
-      { images: ['golden','age'],    answer: 'GOLDEN AGE',    hint: '✨ Kollywood\'s peak classic era' },
-      { images: ['black','lion'],    answer: 'BLACK LION',    hint: '🦁 Leo / dark fierce hero symbol' },
-      { images: ['high','land'],     answer: 'HIGHLAND',      hint: '🏔️ Kaithi rugged terrain chase' },
-      { images: ['action','hero'],   answer: 'ACTION HERO',   hint: '🎬 Tamil mass entertainer lead' },
-      { images: ['tiger','king'],    answer: 'TIGER KING',    hint: '🐅 Fierce royal Tamil villain' },
-      { images: ['sword','play'],    answer: 'SWORDPLAY',     hint: '🗡️ Classic Tamil period-drama duel' },
-      { images: ['star','light'],    answer: 'STARLIGHT',     hint: '⭐ Kollywood glamour glow' },
+      { images: ['super', 'star'], answer: 'SUPERSTAR', hint: '🌟 Rajinikanth\'s iconic title' },
+      { images: ['mind', 'beast'], answer: 'MINDBEAST', hint: '🧠 Wild intellect — Vijay\'s BEAST' },
+      { images: ['king', 'maker'], answer: 'KINGMAKER', hint: '👑 MANKATHA MAARI VARADHU BRO' },
+      { images: ['fire', 'brand'], answer: 'FIREBRAND', hint: '🔥 Passionate rebel hero' },
+      { images: ['silver', 'screen'], answer: 'SILVERSCREEN', hint: '🎬 THEARTRE NAME (ROHINI)' },
+      { images: ['storm', 'rider'], answer: 'STORM RIDER', hint: '🌪️ Fast-action stunt hero' },
+      { images: ['moon', 'knight'], answer: 'MOON KNIGHT', hint: '🌙 Marvel Super hero' },
+      { images: ['golden', 'age'], answer: 'GOLDEN AGE', hint: '✨ Kollywood\'s peak classic era' },
+      { images: ['black', 'lion'], answer: 'BLACK LION', hint: '🦁 Leo / dark fierce hero symbol' },
+      { images: ['high', 'land'], answer: 'HIGHLAND', hint: '🏔️ Kaithi rugged terrain chase' },
+      { images: ['action', 'king'], answer: 'ACTION KING', hint: '🎬 Tamil mass entertainer lead' },
+      { images: ['tiger', 'king'], answer: 'TIGER KING', hint: '🐅 Fierce royal Tamil villain' },
+      { images: ['sword', 'play'], answer: 'SWORDPLAY', hint: '🗡️ Classic Tamil period-drama duel' },
+      { images: ['star', 'light'], answer: 'STARLIGHT', hint: '⭐ Kollywood glamour glow' },
 
       // ══ IDIOM & PHRASE COMPOUNDS ══
-      { images: ['eye','witness'],   answer: 'EYEWITNESS',    hint: 'Person who saw the event' },
-      { images: ['brain','wash'],    answer: 'BRAINWASH',     hint: 'Forcefully change beliefs' },
-      { images: ['cold','blood'],    answer: 'COLDBLOODED',   hint: 'Emotionless or reptilian' },
-      { images: ['paper','trail'],   answer: 'PAPERTRAIL',    hint: 'Documented evidence path' },
-      { images: ['blind','spot'],    answer: 'BLINDSPOT',     hint: 'Area you fail to notice' },
-      { images: ['chain','reaction'],answer: 'CHAINREACTION', hint: 'Events triggering one another' },
-      { images: ['double','edge'],   answer: 'DOUBLEEDGE',    hint: 'Both helpful and harmful' },
-      { images: ['silent','storm'],  answer: 'SILENTSTORM',   hint: 'Hidden emotional turmoil' },
-      { images: ['false','alarm'],   answer: 'FALSEALARM',    hint: 'Warning without danger' },
-      { images: ['deep','freeze'],   answer: 'DEEPFREEZE',    hint: 'Extreme cold storage' },
-      { images: ['memory','lane'],   answer: 'MEMORYLANE',    hint: 'Nostalgic recollection' },
-      { images: ['last','stand'],    answer: 'LASTSTAND',     hint: 'Final defensive effort' },
-      { images: ['heavy','heart'],   answer: 'HEAVYHEART',    hint: 'Feeling deep sadness' },
-      { images: ['open','secret'],   answer: 'OPENSECRET',    hint: 'Known but unspoken truth' },
-      { images: ['silver','lining'], answer: 'SILVERLINING',  hint: 'Positive side of bad situation' },
+      { images: ['eye', 'witness'], answer: 'EYEWITNESS', hint: 'Person who saw the event' },
+      { images: ['brain', 'wash'], answer: 'BRAINWASH', hint: 'Forcefully change beliefs' },
+      { images: ['cold', 'blood'], answer: 'COLDBLOODED', hint: 'Emotionless or reptilian' },
+      { images: ['paper', 'trail'], answer: 'PAPERTRAIL', hint: 'Documented evidence path' },
+      { images: ['blind', 'spot'], answer: 'BLINDSPOT', hint: 'Area you fail to notice' },
+      { images: ['chain', 'reaction'], answer: 'CHAINREACTION', hint: 'Events triggering one another' },
+      { images: ['double', 'edge'], answer: 'DOUBLEEDGE', hint: 'Both helpful and harmful' },
+      { images: ['silent', 'storm'], answer: 'SILENTSTORM', hint: 'Hidden emotional turmoil' },
+      { images: ['false', 'alarm'], answer: 'FALSEALARM', hint: 'Warning without danger' },
+      { images: ['deep', 'freeze'], answer: 'DEEPFREEZE', hint: 'Extreme cold storage' },
+      { images: ['memory', 'lane'], answer: 'MEMORYLANE', hint: 'Nostalgic recollection' },
+      { images: ['last', 'stand'], answer: 'LASTSTAND', hint: 'Final defensive effort' },
+      { images: ['heavy', 'heart'], answer: 'HEAVYHEART', hint: 'Feeling deep sadness' },
+      { images: ['open', 'secret'], answer: 'OPENSECRET', hint: 'Known but unspoken truth' },
+      { images: ['silver', 'lining'], answer: 'SILVERLINING', hint: 'Positive side of bad situation' },
 
       // ══ FUNCTION-WORD COMPOUNDS ══
-      { images: ['after','shock'],   answer: 'AFTERSHOCK',   hint: 'Tremor following an earthquake' },
-      { images: ['over','board'],    answer: 'OVERBOARD',    hint: 'Excessively or into the sea' },
-      { images: ['under','take'],    answer: 'UNDERTAKE',    hint: 'To begin or commit to a task' },
-      { images: ['every','where'],   answer: 'EVERYWHERE',   hint: 'All places at once' },
-      { images: ['some','thing'],    answer: 'SOMETHING',    hint: 'An unknown object or idea' },
-      { images: ['any','where'],     answer: 'ANYWHERE',     hint: 'No specific place' },
-      { images: ['there','fore'],    answer: 'THEREFORE',    hint: 'For that reason' },
-      { images: ['more','over'],     answer: 'MOREOVER',     hint: 'In addition to that' },
-      { images: ['never','mind'],    answer: 'NEVERMIND',    hint: 'Ignore or forget it' },
-      { images: ['with','out'],      answer: 'WITHOUT',      hint: 'Lacking something' },
-      { images: ['over','take'],     answer: 'OVERTAKE',     hint: 'Catch up and pass' },
-      { images: ['water','side'],    answer: 'WATERSIDE',    hint: 'Area near a body of water' },
-      { images: ['after','life'],    answer: 'AFTERLIFE',    hint: 'Life beyond death belief' },
-      { images: ['under','line'],    answer: 'UNDERLINE',    hint: 'Draw a line beneath text' },
+      { images: ['after', 'shock'], answer: 'AFTERSHOCK', hint: 'Tremor following an earthquake' },
+      { images: ['over', 'board'], answer: 'OVERBOARD', hint: 'Excessively or into the sea' },
+      { images: ['under', 'take'], answer: 'UNDERTAKE', hint: 'To begin or commit to a task' },
+      { images: ['every', 'where'], answer: 'EVERYWHERE', hint: 'All places at once' },
+      { images: ['some', 'thing'], answer: 'SOMETHING', hint: 'An unknown object or idea' },
+      { images: ['any', 'where'], answer: 'ANYWHERE', hint: 'No specific place' },
+      { images: ['there', 'fore'], answer: 'THEREFORE', hint: 'For that reason' },
+      { images: ['more', 'over'], answer: 'MOREOVER', hint: 'In addition to that' },
+      { images: ['never', 'mind'], answer: 'NEVERMIND', hint: 'Ignore or forget it' },
+      { images: ['with', 'out'], answer: 'WITHOUT', hint: 'Lacking something' },
+      { images: ['over', 'take'], answer: 'OVERTAKE', hint: 'Catch up and pass' },
+      { images: ['water', 'side'], answer: 'WATERSIDE', hint: 'Area near a body of water' },
+      { images: ['after', 'life'], answer: 'AFTERLIFE', hint: 'Life beyond death belief' },
+      { images: ['under', 'line'], answer: 'UNDERLINE', hint: 'Draw a line beneath text' },
     ];
 
     // ══════════════════
@@ -2193,6 +2087,7 @@
     let hostQuestions = null;       // host keeps questions in memory
     let localPlayers = {};         // host's local mirror of players
     let localCurrentQ = 0;
+    let localSkippedCount = 0; // questions skipped via Force Next
     let localStatus = 'lobby';
 
     // ══════════════════════════════════════════════════════════════
@@ -2203,42 +2098,46 @@
     function initFirebase(databaseURL) {
       const url = databaseURL.trim().replace(/\/$/, '');
 
+      // Re-use existing app if already initialised with the same URL
       if (firebase.apps.length > 0) {
         const existing = firebase.apps[0];
         if (existing.options.databaseURL === url) {
           db = existing.database();
-          db.ref('.info/connected').on('value', snap => {
-            updateConnStatus(snap.val(), 'conn-status');
-            updateConnStatus(snap.val(), 'player-conn-status');
-          });
+          watchConnection();
           return;
         }
         try { existing.delete(); } catch (e) { }
       }
 
       try {
-        firebase.initializeApp({ apiKey: 'AIzaSyDummy', databaseURL: url });
-        db = firebase.database();
-        db.ref('.info/connected').on('value', snap => {
-          updateConnStatus(snap.val(), 'conn-status');
-          updateConnStatus(snap.val(), 'player-conn-status');
+        // Firebase RTDB with open rules doesn't validate the API key for DB access,
+        // but the SDK requires it to look like a real key (39 chars starting AIzaSy).
+        firebase.initializeApp({
+          apiKey: 'AIzaSyBtiPYjPWmr-bvP_aDK9dyByv_uyvviA8Y',
+          databaseURL: url,
+          projectId: url.replace('https://', '').split('.')[0]
         });
+        db = firebase.database();
+        watchConnection();
       } catch (e) {
-        updateConnStatus(false, 'conn-status');
-        updateConnStatus(false, 'player-conn-status');
-        showToast('❌ Firebase error: ' + e.message, 'error');
+        // Silent — DB may still work even if init throws a non-critical warning
+        try { db = firebase.apps[0].database(); watchConnection(); } catch (_) { }
       }
     }
 
-    function updateConnStatus(connected, elId) {
-      const el = document.getElementById(elId);
-      if (!el) return;
-      if (connected) {
-        el.innerHTML = '<span class="conn-badge connected"><span class="conn-dot"></span>Connected to Firebase ✅</span>';
-      } else {
-        el.innerHTML = '<span class="conn-badge disconnected"><span class="conn-dot"></span>Disconnected — check URL</span>';
-      }
+    let _connectedOnce = false;
+    function watchConnection() {
+      db.ref('.info/connected').on('value', snap => {
+        if (snap.val() === true) {
+          _connectedOnce = true;
+        } else if (_connectedOnce) {
+          // Only show disconnect toast AFTER we were connected — not on cold load
+          showToast('⚠️ Connection lost — retrying…', 'warn');
+        }
+      });
     }
+
+    function updateConnStatus() { /* status shown via toast only */ }
 
     // ══════════════════
     // TABS & SCREENS
@@ -2338,7 +2237,8 @@
       localPlayers = {};
       hostQuestions = shuffleAll();
 
-      // Write initial room to Firebase
+      // Write initial room to Firebase — explicitly null stale fields
+      // so players joining never see data from a previous session
       roomRef = db.ref('rooms/' + roomCode);
       roomRef.set({
         hostName: user,
@@ -2347,8 +2247,12 @@
         questionStartTime: null,
         totalQPlayed: 0,
         players: {},
-        // Store questions without answers visible to players
-        questionCount: hostQuestions.length
+        questionCount: hostQuestions.length,
+        currentQuestion: null,
+        broadcast: null,
+        actions: null,
+        gameoverPlayers: null,
+        playerMessages: null
       }).then(() => {
         document.getElementById('host-room-code').textContent = roomCode;
         showScreen('host-lobby');
@@ -2466,12 +2370,13 @@
 
       if (type === 'PLAYER_TIMEOUT') {
         if (data.roomCode !== roomCode) return;
+        // Ignore stale timeouts from a question the host already force-skipped
+        if (data.questionIndex !== undefined && data.questionIndex !== localCurrentQ) return;
         const p = localPlayers[data.playerId];
         if (!p) return;
         p.answerStatus = 'timeout'; p.timeoutCount++;
         roomRef.child('players/' + data.playerId).set(p);
         renderDashboard();
-        // Auto-advance if every active player has now finished
         checkAllAnswered();
       }
 
@@ -2512,20 +2417,10 @@
       }
     }
 
-    // Auto-advance ONLY when every active player has answered correctly or timed out.
-    // 'failed' (ran out of chances) does NOT trigger advance — those players must wait
-    // for the timer to run out like everyone else.
-    function checkAllAnswered() {
-      if (localStatus !== 'playing') return;
-      const active = Object.values(localPlayers).filter(p => p.status === 'online');
-      if (active.length === 0) return;
-      const allDone = active.every(p => ['correct', 'timeout'].includes(p.answerStatus));
-      if (allDone) {
-        // Small delay so the last player sees their result before advancing
-        clearInterval(gameTimer);
-        setTimeout(() => hostNextQuestion(), 1500);
-      }
-    }
+    // Auto-advance is disabled — the host timer always runs to zero.
+    // Players wait the full 30s regardless of whether they answered correctly,
+    // failed, or are still thinking. Only the timer expiry triggers the next question.
+    function checkAllAnswered() { /* intentionally empty — timer drives all advances */ }
 
     // ── HOST NOTIFICATIONS ──
     const _notifs = {};
@@ -2587,6 +2482,7 @@
 
       localStatus = 'playing';
       localCurrentQ = 0;
+      localSkippedCount = 0;
       const now = Date.now();
 
       // Reset all players
@@ -2606,7 +2502,7 @@
         currentQ: 0,
         questionStartTime: now,
         totalQPlayed: 0,
-        currentQuestion: { images: q.images, hint: q.hint, index: 0, letterCount: q.answer.replace(/\s/g, '').length, wordCount: q.answer.split(' ').length, firstLetter: q.answer[0], lastLetter: q.answer[q.answer.length - 1] }
+        currentQuestion: { images: q.images, hint: q.hint, index: 0, displayIndex: 1, letterCount: q.answer.replace(/\s/g, '').length, wordCount: q.answer.split(' ').length, firstLetter: q.answer[0], lastLetter: q.answer[q.answer.length - 1] }
       };
       Object.keys(localPlayers).forEach(id => {
         startBatch['players/' + id + '/chances'] = 3;
@@ -2631,7 +2527,7 @@
       }, 1000);
     }
 
-    function hostNextQuestion() {
+    function hostNextQuestion(skipped = false) {
       clearInterval(gameTimer);
       const q = hostQuestions[localCurrentQ];
       if (!q) return;
@@ -2645,6 +2541,7 @@
       }
 
       localCurrentQ++;
+      if (skipped) localSkippedCount++;
       const now = Date.now();
 
       // Reset ALL players for new question (not just 'online' ones —
@@ -2657,9 +2554,11 @@
       });
 
       const nextQ = hostQuestions[localCurrentQ];
-      roomRef.update({
-        totalQPlayed: firebase.database.ServerValue.increment(1)
-      });
+      if (!skipped) {
+        roomRef.update({
+          totalQPlayed: firebase.database.ServerValue.increment(1)
+        });
+      }
 
       // Write per-player resets individually to avoid one huge payload
       const playerResetBatch = {};
@@ -2675,7 +2574,7 @@
         roomRef.update({
           currentQ: localCurrentQ,
           questionStartTime: now,
-          currentQuestion: { images: nextQ.images, hint: nextQ.hint, index: localCurrentQ, letterCount: nextQ.answer.replace(/\s/g, '').length, wordCount: nextQ.answer.split(' ').length, firstLetter: nextQ.answer[0], lastLetter: nextQ.answer[nextQ.answer.length - 1] },
+          currentQuestion: { images: nextQ.images, hint: nextQ.hint, index: localCurrentQ, displayIndex: localCurrentQ + 1 - localSkippedCount, letterCount: nextQ.answer.replace(/\s/g, '').length, wordCount: nextQ.answer.split(' ').length, firstLetter: nextQ.answer[0], lastLetter: nextQ.answer[nextQ.answer.length - 1] },
           ...playerResetBatch
         });
         renderDashboard();
@@ -2683,7 +2582,7 @@
       }, 3000);
     }
 
-    function hostForceNext() { clearInterval(gameTimer); hostNextQuestion(); }
+    function hostForceNext() { clearInterval(gameTimer); hostNextQuestion(true); }
 
     function hostEndGame() {
       clearInterval(gameTimer);
@@ -2737,8 +2636,9 @@
 
     function renderDashboard() {
       const q = hostQuestions ? hostQuestions[localCurrentQ] : null;
-      document.getElementById('hd-q-num').textContent = localCurrentQ + 1;
-      document.getElementById('hd-q-label').textContent = `Question ${localCurrentQ + 1} of 80`;
+      const displayQ = localCurrentQ + 1 - localSkippedCount;
+      document.getElementById('hd-q-num').textContent = displayQ;
+      document.getElementById('hd-q-label').textContent = `Question ${displayQ} of 80`;
       renderClueChips('hd-clue-chips', q ? q.images : null, true);
       document.getElementById('hd-player-count').textContent = Object.keys(localPlayers).length;
       if (q) {
@@ -2746,7 +2646,7 @@
         const hb = document.getElementById('hd-hint-badge');
         const ht = document.getElementById('hd-hint-text');
         if (hb && ht) {
-          hb.style.display = 'inline-flex';
+          hb.classList.remove('hidden');
           ht.textContent = `${q.hint}  •  ${q.answer.length} letters  •  Starts with "${q.answer[0]}"`;
         }
       }
@@ -2905,10 +2805,9 @@
         document.getElementById('pw-name').textContent = `👋 Hello, ${name}!`;
         document.getElementById('pw-room').textContent = code;
         listenAsPlayer(pRoomRef, code, pid);
-        rGoTo(0); // reset rules to first tab
         showScreen('player-rules');
       }).catch(e => {
-        showToast('❌ Cannot reach Firebase', 'error');
+        showToast('❌ Room not found or connection issue — try again', 'error');
         playerState = null;
       });
     }
@@ -2942,42 +2841,66 @@
       // reduces per-player bandwidth by ~50x and prevents Firebase from
       // rate-limiting / terminating the room connection.
 
-      // 1. Watch status node only
+      // 1. Watch status node — track locally so currentQuestion listener
+      //    can check it synchronously without a race-condition async fetch
       const statusRef = pRoomRef.child('status');
       const statusFn = snap => {
         const status = snap.val();
         if (!playerState) return;
+        playerState.roomStatus = status;
+
         if (status === 'terminated') {
           showToast('🗑️ Host terminated the room', 'error');
           detachListeners();
           playerState = null;
           showScreen('player-join');
+          return;
         }
+
+        // Mark game as playing — cqFn will handle the actual question start
+        // (avoids a race where we fetch currentQuestion before it propagates)
       };
       statusRef.on('value', statusFn);
       myListeners.push({ ref: statusRef, evt: 'value', fn: statusFn });
 
       // 2. Watch currentQuestion only (small object, no player data)
-      const cqRef = pRoomRef.child('currentQuestion');
-      const cqFn = snap => {
-        const q = snap.val();
-        if (!q || !playerState || !playerState.joined) return;
+      // Cache the latest question snap so we can use it once joined=true
+      let _pendingQuestion = null;
+
+      function tryStartFromQuestion(q) {
+        if (!q || !playerState || !Array.isArray(q.images)) return;
+        if (!playerState.joined) {
+          // Not joined yet — cache it and wait; JOIN_OK will call this again
+          _pendingQuestion = q;
+          return;
+        }
         const qIdx = q.index;
         if (playerState.currentQ < 0) {
-          playerState.currentQ = 0;
-          playerState.score = 0;
-          playerState.chances = 3;
-          playerState.questions[0] = q;
+          // First question — start the game
+          playerState.currentQ = qIdx;
+          playerState.questions[qIdx] = q;
+          const startTime = playerState.questionStartTime;
+          const elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+          playerTimerSecs = Math.max(1, TIMER_MAX - elapsed);
           setupTabLeave(pRoomRef, code, pid);
           showScreen('player-game');
-          startPlayerQuestion();
+          startPlayerQuestion(true);
         } else if (qIdx > playerState.currentQ) {
+          // Subsequent question advance
           playerState.currentQ = qIdx;
           playerState.chances = 3;
           playerState.questions[qIdx] = q;
           clearInterval(playerTimerInterval); clearInterval(autoNextTimer);
           startPlayerQuestion();
         }
+      }
+
+      const cqRef = pRoomRef.child('currentQuestion');
+      const cqFn = snap => {
+        const q = snap.val();
+        if (!q || !playerState) return;
+        if (q.index === undefined || q.index === null || !Array.isArray(q.images)) return;
+        tryStartFromQuestion(q);
       };
       cqRef.on('value', cqFn);
       myListeners.push({ ref: cqRef, evt: 'value', fn: cqFn });
@@ -3019,7 +2942,21 @@
       if (type === 'JOIN_OK' && msg.playerId === playerState.id) {
         playerState.joined = true;
         showToast('✅ Joined successfully!', 'success');
-        return; // ← FIX: stop here, don't fall into ANSWER_RESULT logic
+        // If cqFn already fired but was blocked waiting for joined=true,
+        // the question is cached in _pendingQuestion — start it now.
+        // Otherwise fetch fresh (game already running when we joined).
+        if (typeof _pendingQuestion !== 'undefined' && _pendingQuestion) {
+          tryStartFromQuestion(_pendingQuestion);
+        } else if (playerState.roomStatus === 'playing' && playerState.currentQ < 0) {
+          const roomPath = db.ref('rooms/' + playerState.roomCode);
+          roomPath.child('questionStartTime').once('value').then(tsSnap => {
+            if (playerState) playerState.questionStartTime = tsSnap.val();
+            roomPath.child('currentQuestion').once('value').then(qSnap => {
+              tryStartFromQuestion(qSnap.val());
+            });
+          });
+        }
+        return;
       }
       if (type === 'JOIN_ERROR' && msg.playerId === playerState.id) {
         showToast('❌ ' + msg.reason, 'error');
@@ -3035,11 +2972,29 @@
         playerState.correctCount = msg.correctCount;
         playerState.chances = 3;
         document.getElementById('abort-screen').classList.remove('show');
-        document.getElementById('rejoin-btn').style.display = 'none';
+        document.getElementById('rejoin-btn').classList.add('hidden');
         document.getElementById('rejoin-btn').disabled = false;
         document.getElementById('rejoin-status').textContent = '';
         showToast('✅ Rejoined! Game continues…', 'success');
         showScreen('player-game');
+        // Fetch the live currentQuestion and questionStartTime from Firebase
+        // so the timer restarts correctly from wherever the host currently is
+        const roomPath = db.ref('rooms/' + playerState.roomCode);
+        Promise.all([
+          roomPath.child('currentQuestion').once('value'),
+          roomPath.child('questionStartTime').once('value')
+        ]).then(([qSnap, tsSnap]) => {
+          const q = qSnap.val();
+          const startTime = tsSnap.val();
+          if (!q || !Array.isArray(q.images)) return;
+          playerState.currentQ = q.index;
+          playerState.questions[q.index] = q;
+          playerState.questionStartTime = startTime;
+          // Calculate how many seconds have already elapsed so timer is in sync
+          const elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+          playerTimerSecs = Math.max(1, TIMER_MAX - elapsed);
+          startPlayerQuestion(true); // preserveTimer — don't reset to 30s
+        });
         return; // ← FIX
       }
       if (type === 'REJOIN_DENIED' && msg.playerId === playerState.id) {
@@ -3070,15 +3025,16 @@
 
 
     // ── PLAYER GAME LOGIC ──
-    function startPlayerQuestion() {
+    function startPlayerQuestion(preserveTimer = false) {
       clearInterval(playerTimerInterval);
       playerTimerInterval = null;
-      playerTimerSecs = TIMER_MAX;
+      if (!preserveTimer) playerTimerSecs = TIMER_MAX;
       resetSubmitBtn(); // always re-enable at start of every new question
       const q = playerState.questions ? playerState.questions[playerState.currentQ] : null;
       if (!q) return;
 
-      const qNum = playerState.currentQ + 1;
+      const q_ = playerState.questions[playerState.currentQ];
+      const qNum = (q_ && q_.displayIndex) ? q_.displayIndex : playerState.currentQ + 1;
       document.getElementById('pg-q-number').textContent = `QUESTION ${qNum} OF 80`;
       document.getElementById('pg-q-label').textContent = `Q ${qNum}/80`;
       document.getElementById('pg-progress').style.width = `${(qNum / 80) * 100}%`;
@@ -3087,7 +3043,7 @@
       document.getElementById('player-answer').disabled = false;
       document.getElementById('pg-solved-count').textContent = `${playerState.correctCount} / 80`;
       document.getElementById('answer-section').style.display = 'block';
-      document.getElementById('result-section').style.display = 'none';
+      document.getElementById('result-section').classList.add('hidden');
       document.getElementById('result-section').innerHTML = '';
 
       resetHints(q);
@@ -3107,15 +3063,24 @@
 
         if (playerTimerSecs <= 0) {
           clearInterval(playerTimerInterval);
-          sendPlayerAction('PLAYER_TIMEOUT', { playerId: playerState.id, roomCode: playerState.roomCode });
-          playerState.timeoutCount++;
+          resetSubmitBtn(); // clear any stuck in-flight state
           document.getElementById('player-answer').disabled = true;
           document.getElementById('answer-section').style.display = 'none';
-          document.getElementById('result-section').innerHTML = `
-        <div class="reveal-banner" style="background:linear-gradient(135deg,#b8860b,#7b5800)">
-          <div style="font-size:20px">⏱️ Time's up!</div>
-          <div class="sub">Waiting for next question…</div></div>`;
-          document.getElementById('result-section').style.display = 'block';
+
+          // Only send TIMEOUT if the player hasn't already failed (used all chances).
+          // Sending TIMEOUT after FAILED would overwrite the host's 'failed' status,
+          // causing the score deduction to be lost.
+          const alreadyFailed = playerState.chances <= 0;
+          if (!alreadyFailed) {
+            sendPlayerAction('PLAYER_TIMEOUT', { playerId: playerState.id, roomCode: playerState.roomCode, questionIndex: playerState.currentQ });
+            playerState.timeoutCount++;
+            document.getElementById('result-section').innerHTML = `
+          <div class="reveal-banner" style="background:linear-gradient(135deg,#b8860b,#7b5800)">
+            <div style="font-size:20px">⏱️ Time's up!</div>
+            <div class="sub">Waiting for next question…</div></div>`;
+          }
+          // If already failed, the deduct banner is already showing — leave it
+          document.getElementById('result-section').classList.remove('hidden');
         }
       }, 1000);
     }
@@ -3167,26 +3132,17 @@
       const q = playerState.questions ? playerState.questions[playerState.currentQ] : null;
 
       if (correct) {
-        clearInterval(playerTimerInterval); clearTimeout(autoNextTimer);
+        // Keep the timer running — only hide the input area
         document.getElementById('answer-section').style.display = 'none';
         document.getElementById('pg-solved-count').textContent = `${playerState.correctCount} / 80`;
-        let cd = 3;
         document.getElementById('result-section').innerHTML = `
       <div class="reveal-banner">
         <div style="font-size:26px">🎉 Correct!</div>
-        <div class="sub">${bonus > 0 ? 'Speed bonus earned! ⚡' : 'Keep it up!'}</div>
-        <div class="auto-next-bar"><div class="auto-next-fill" id="anf" style="width:100%"></div></div>
-        <div class="auto-next-label" id="anl">Next in ${cd}s…</div></div>`;
-        document.getElementById('result-section').style.display = 'block';
+        <div class="sub">${bonus > 0 ? 'Speed bonus earned! ⚡' : 'Waiting for next question…'}</div>
+      </div>`;
+        document.getElementById('result-section').classList.remove('hidden');
         gc.classList.add('flash-correct');
         setTimeout(() => gc.classList.remove('flash-correct'), 500);
-        setTimeout(() => { const f = document.getElementById('anf'); if (f) f.style.width = '0%'; }, 50);
-        autoNextTimer = setInterval(() => {
-          cd--;
-          const l = document.getElementById('anl');
-          if (l) l.textContent = cd > 0 ? `Next in ${cd}s…` : '⏳ Waiting for host…';
-          if (cd <= 0) clearInterval(autoNextTimer);
-        }, 1000);
       } else {
         gc.classList.add('flash-wrong');
         setTimeout(() => gc.classList.remove('flash-wrong'), 500);
@@ -3195,14 +3151,14 @@
         if (chancesGone >= 2 && q) unlockHint(2, q);
         renderChances();
         if (playerState.chances === 0) {
-          clearInterval(playerTimerInterval);
+          // Keep timer running — just disable input and show message
           document.getElementById('player-answer').disabled = true;
           document.getElementById('answer-section').style.display = 'none';
           let html = `<div class="deduct-banner"><div class="deduct-word">💔 No Chances Left!</div>`;
           if (deducted) html += `<div class="deduct-sub">⚠️ Score deduction applied!</div>`;
           html += `<div class="deduct-sub" style="margin-top:6px">Waiting for next question…</div></div>`;
           document.getElementById('result-section').innerHTML = html;
-          document.getElementById('result-section').style.display = 'block';
+          document.getElementById('result-section').classList.remove('hidden');
           if (deducted) showToast(`💔 Score deduction applied!`, 'error');
         } else {
           showToast(`❌ Wrong! ${playerState.chances} chance${playerState.chances !== 1 ? 's' : ''} left`, 'error');
@@ -3361,38 +3317,9 @@
       else { inp.type = 'password'; btn.textContent = '👁️'; }
     }
 
-    // ══════════════════════════════════════════════════════════════
-    // RULES SCREEN NAVIGATION
-    // ══════════════════════════════════════════════════════════════
-    let rCurrent = 0;
-    const R_TOTAL = 5;
-
-    function rGoTo(idx) {
-      rCurrent = Math.max(0, Math.min(R_TOTAL - 1, idx));
-      const track = document.getElementById('rSlidesTrack');
-      if (track) track.style.transform = `translateX(-${rCurrent * 100}%)`;
-      document.querySelectorAll('.r-tab-pill').forEach((p, i) => p.classList.toggle('active', i === rCurrent));
-      document.querySelectorAll('.r-dot').forEach((d, i) => d.classList.toggle('active', i === rCurrent));
-      const pills = document.querySelectorAll('.r-tab-pill');
-      if (pills[rCurrent]) pills[rCurrent].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
-
     function rulesStart() {
       showScreen('player-waiting');
     }
-
-    // Touch swipe for rules slides
-    (function () {
-      let sx = 0, sy = 0;
-      const outer = document.getElementById('rSlidesOuter');
-      if (!outer) return;
-      outer.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-      outer.addEventListener('touchend', e => {
-        const dx = e.changedTouches[0].clientX - sx;
-        const dy = e.changedTouches[0].clientY - sy;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) rGoTo(rCurrent + (dx < 0 ? 1 : -1));
-      }, { passive: true });
-    })();
 
     // ── KEYBOARD ──
     document.addEventListener('keydown', e => {
@@ -3410,181 +3337,182 @@
     // ══════════════════════════════════════════════════════════════
     const CLUE_EMOJI = {
       // ── syllabic word parts ──
-      'sun':       '☀️',
-      'set':       '🌅',
-      'star':      '⭐',
-      'fish':      '🐟',
-      'moon':      '🌙',
-      'light':     '💡',
-      'bee':       '🐝',
-      'hive':      '🍯',
-      'rain':      '🌧️',
-      'bow':       '🏹',
-      'butter':    '🧈',
-      'fly':       '🪰',
-      'book':      '📚',
-      'mark':      '🔖',
-      'water':     '💧',
-      'melon':     '🍉',
-      'key':       '🔑',
-      'board':     '📋',
-      'flower':    '🌸',
-      'pan':       '🍳',
-      'cake':      '🎂',
-      'birth':     '👶',
-      'day':       '📅',
-      'gold':      '🥇',
-      'bed':       '🛌',
-      'room':      '🏠',
-      'door':      '🚪',
-      'step':      '👣',
-      'glasses':   '🕶️',
-      'rose':      '🌹',
-      'bud':       '🌱',
-      'dragon':    '🐉',
-      'sea':       '🌊',
-      'shell':     '🐚',
-      'thunder':   '⛈️',
-      'bolt':      '⚡',
-      'fire':      '🔥',
-      'wall':      '🧱',
-      'wild':      '🌿',
-      'card':      '🃏',
-      'check':     '✅',
-      'point':     '📍',
-      'under':     '⬇️',
-      'world':     '🌍',
-      'super':     '💥',
-      'hero':      '🦸',
-      'gem':       '💎',
-      'stone':     '🪨',
-      'heart':     '❤️',
-      'sword':     '🗡️',
-      'sweet':     '🍬',
-      'back':      '🔙',
-      'stage':     '🎭',
-      'dark':      '🌑',
-      'horse':     '🐴',
-      'black':     '⬛',
-      'ice':       '🧊',
-      'shadow':    '🫥',
-      'box':       '🥊',
-      'blood':     '🩸',
-      'hound':     '🐕',
-      'break':     '🔨',
-      'shine':     '✨',
-      'mine':      '⛏️',
-      'craft':     '🏗️',
-      'fort':      '🏰',
-      'night':     '🌙',
-      'game':      '🎮',
-      'play':      '▶️',
-      'war':       '⚔️',
-      'dead':      '💀',
-      'ghost':     '👻',
-      'ship':      '🚢',
-      'speed':     '💨',
-      'power':     '⚡',
-      'up':        '☝️',
-      'fall':      '🍃',
-      'battle':    '🛡️',
-      'field':     '🌾',
-      'arms':      '💪',
-      'over':      '⬆️',
-      'watch':     '⌚',
-      'skull':     '💀',
-      'cap':       '🧢',
-      'ball':      '⚽',
-      'lion':      '🦁',
-      'mind':      '🧠',
-      'beast':     '🐗',
-      'mode':      '⚙️',
-      'king':      '👑',
-      'pin':       '📌',
-      'lord':      '🎖️',
-      'brand':     '🏷️',
-      'robot':     '🤖',
-      'police':    '👮',
-      'silver':    '🥈',
-      'screen':    '🎬',
-      'storm':     '🌪️',
-      'rider':     '🏍️',
-      'golden':    '✨',
-      'age':       '⏳',
-      'high':      '🏔️',
-      'land':      '🌿',
-      'maker':     '🔧',
-      'action':    '🎬',
-      'crystal':   '🔮',
-      'diamond':   '💎',
-      'writer':    '✍️',
-      'current':   '🌊',
-      'crown':     '👸',
-      'head':      '🧠',
-      'shot':      '🎯',
-      'run':       '🏃',
-      'band':      '🎵',
-      'struck':    '😲',
-      'ball2':     '🎱', // alternate ball for crystal ball
-      'spring':    '🌷',
-      'time':      '⏰',
-      'line':      '📏',
-      'hot':       '🌶️',
-      'dog':       '🐶',
-      'cake2':     '🍰', // cheesecake
-      'cheese':    '🧀',
-      'thunder2':  '⚡',
-      'bird':      '🐦',
-      'cliff':     '🪨',
-      'hanger':    '👗',
-      'ham':       '🥩',
-      'tiger':     '🐅',
-      'eye':       '👁️',
-      'lid':       '🫣',
+      'sun': '☀️',
+      'set': '🌅',
+      'star': '⭐',
+      'fish': '🐟',
+      'moon': '🌕',
+      'light': '💡',
+      'bee': '🐝',
+      'hive': '🍯',
+      'rain': '🌧️',
+      'bow': '🏹',
+      'butter': '🧈',
+      'fly': '🪰',
+      'book': '📚',
+      'mark': '🔖',
+      'water': '💧',
+      'melon': '🍉',
+      'key': '🔑',
+      'board': '📋',
+      'flower': '🌸',
+      'pan': '🍳',
+      'cake': '🎂',
+      'birth': '👶',
+      'day': '📅',
+      'gold': '🪙',
+      'bed': '🛌',
+      'room': '🏠',
+      'door': '🚪',
+      'step': '👣',
+      'glasses': '🕶️',
+      'rose': '🌹',
+      'bud': '🌱',
+      'dragon': '🐉',
+      'sea': '🏝️',
+      'shell': '🐚',
+      'thunder': '⛈️',
+      'bolt': '🔩',
+      'fire': '🔥',
+      'wall': '🧱',
+      'wild': '🌿',
+      'card': '🃏',
+      'check': '✅',
+      'point': '🫵🏽',
+      'under': '⬇️',
+      'world': '🌍',
+      'super': '👌🏽',
+      'hero': '🦸',
+      'gem': '💎',
+      'stone': '🪨',
+      'heart': '❤️',
+      'sword': '🗡️',
+      'sweet': '🍬',
+      'back': '🔙',
+      'stage': '🎭',
+      'dark': '🌑',
+      'horse': '🐎',
+      'black': '⬛',
+      'ice': '🧊',
+      'shadow': '👤',
+      'box': '🥊',
+      'blood': '🩸',
+      'hound': '🐕',
+      'break': '🔨',
+      'shine': '✨',
+      'mine': '⛏️',
+      'craft': '🏗️',
+      'fort': '🏰',
+      'night': '🌙',
+      'game': '🎮',
+      'play': '▶️',
+      'war': '⚔️',
+      'dead': '⚰️',
+      'ghost': '👻',
+      'ship': '🚢',
+      'speed': '🏃🏽‍♂️',
+      'power': '🏋🏽‍♀️',
+      'up': '☝️',
+      'fall': '🍃',
+      'battle': '🛡️',
+      'field': '🌾',
+      'arms': '💪',
+      'over': '⬆️',
+      'watch': '⌚',
+      'skull': '💀',
+      'cap': '🧢',
+      'ball': '⚽',
+      'lion': '🦁',
+      'mind': '🤯',
+      'beast': '🐗',
+      'mode': '⚙️',
+      'king': '👸',
+      'pin': '📌',
+      'brand': '🏷️',
+      'fight': '🤺',
+      'robot': '🤖',
+      'police': '👮',
+      'silver': '🥈',
+      'screen': '🎞️',
+      'storm': '🌪️',
+      'rider': '🚵🏼‍♂️',
+      'golden': '🥇',
+      'age': '⏳',
+      'high': '🏔️',
+      'land': '🛬',
+      'maker': '🔧',
+      'action': '🎬',
+      'crystal': '🔮',
+      'diamond': '💍',
+      'writer': '✍️',
+      'current': '🔋',
+      'crown': '👑',
+      'head': '🗣️',
+      'shot': '🥃',
+      'run': '🏃',
+      'band': '🩹',
+      'knight': '🐴',
+      'struck': '😲',
+      'ball2': '🎱', // alternate ball for crystal ball
+      'spring': '🌷',
+      'time': '⏰',
+      'line': '📏',
+      'hot': '🌶️',
+      'dog': '🐶',
+      'cake2': '🍰', // cheesecake
+      'cheese': '🧀',
+      'thunder2': '⚡⚡',
+      'bird': '🐦',
+      'cliff': '🧗🏼',
+      'hanger': '👗',
+      'ham': '🥩',
+      'tiger': '🐅',
+      'eye': '👁️',
+      'lid': '🫣',
       // ── new keys for idiom / compound batch ──
-      'witness':   '🧑‍⚖️',
-      'brain':     '🧠',
-      'wash':      '🚿',
-      'cold':      '🥶',
-      'paper':     '📄',
-      'trail':     '🥾',
-      'blind':     '🙈',
-      'spot':      '🎯',
-      'chain':     '⛓️',
-      'reaction':  '💥',
-      'double':    '2️⃣',
-      'edge':      '🔪',
-      'silent':    '🤫',
-      'false':     '❌',
-      'alarm':     '🚨',
-      'deep':      '🌊',
-      'freeze':    '🧊',
-      'memory':    '💭',
-      'lane':      '🛣️',
-      'last':      '🏁',
-      'stand':     '🪖',
-      'heavy':     '🏋️',
-      'open':      '🔓',
-      'secret':    '🤐',
-      'lining':    '🌤️',
+      'witness': '🧑‍⚖️',
+      'brain': '🧠',
+      'wash': '🚿',
+      'cold': '❄️',
+      'paper': '📄',
+      'trail': '🥾',
+      'blind': '🙈',
+      'spot': '🎯',
+      'chain': '⛓️',
+      'reaction': '🧪',
+      'double': '2️⃣',
+      'edge': '🔪',
+      'silent': '🤫',
+      'false': '❌',
+      'alarm': '🚨',
+      'deep': '⚓',
+      'freeze': '🥶',
+      'memory': '💭',
+      'lane': '🛣️',
+      'last': '🏁',
+      'stand': '🧍🏼',
+      'heavy': '🏋️',
+      'open': '🔓',
+      'secret': '🤐',
+      'lining': '🌤️',
       // ── new keys for function-word compound batch ──
-      'after':     '⏭️',
-      'shock':     '⚡',
-      'take':      '🤲',
-      'every':     '🌐',
-      'where':     '📍',
-      'some':      '🔢',
-      'thing':     '📦',
-      'any':       '♾️',
-      'there':     '👉',
-      'fore':      '🔜',
-      'more':      '➕',
-      'never':     '🚫',
-      'with':      '🤝',
-      'out':       '🚪',
-      'into':      '➡️',
-      'side':      '↔️',
-      'life':      '🌱',
+      'after': '⏭️',
+      'shock': '😱',
+      'take': '🤲',
+      'every': '🌐',
+      'where': '📍',
+      'some': '🔢',
+      'thing': '📦',
+      'any': '♾️',
+      'there': '👉',
+      'fore': '🔜',
+      'more': '➕',
+      'never': '🚫',
+      'with': '🤝',
+      'out': '📤',
+      'into': '➡️',
+      'side': '↔️',
+      'life': '🛟',
     };
 
     function renderClueChips(elId, images, isHost) {
@@ -3601,15 +3529,27 @@
     // ══════════════════
     // INIT — auto-connect Firebase
     // ══════════════════
-    window.addEventListener('load', function () {
+    function bootApp() {
       document.getElementById('loading-overlay').classList.add('hidden');
-      if (typeof firebase === 'undefined') {
-        alert('⚠️ Firebase SDK failed to load. Please check your internet connection and reload.');
-        return;
+      if (typeof firebase !== 'undefined') {
+        initFirebase(FIREBASE_URL);
       }
-      initFirebase(FIREBASE_URL);
+      // Always show login — Firebase errors surface as toasts if/when needed
       showScreen('host-login');
+    }
+
+    // Boot on window load; 3s fallback in case CDN is slow
+    let _booted = false;
+    window.addEventListener('load', function () {
+      if (_booted) return;
+      _booted = true;
+      bootApp();
     });
+    setTimeout(function () {
+      if (_booted) return;
+      _booted = true;
+      bootApp();
+    }, 3000);
   </script>
 </body>
 
