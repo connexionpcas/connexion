@@ -282,6 +282,11 @@
       letter-spacing: 1px;
     }
 
+    .input-upper {
+      text-transform: uppercase;
+      letter-spacing: 4px !important;
+    }
+
     @keyframes borderPulse {
 
       0%,
@@ -2862,9 +2867,12 @@
 
     <div class="card">
       <div class="card-title">> CLIENT LOGIN</div>
-      <input type="text" id="player-name" placeholder="Team number will appear here" maxlength="20" readonly style="cursor:not-allowed;opacity:0.85;border-bottom-color:var(--green);color:var(--green);" />
+      <input type="text" id="player-name" placeholder="Auto-filled from team draw" maxlength="20" readonly style="cursor:not-allowed;border-bottom-color:var(--green);color:var(--green);background:rgba(0,255,136,0.03);" />
       <input type="text" id="player-room-code" placeholder="Session ID from Host" class="input-upper" />
       <button class="btn btn-secondary" onclick="playerJoin()">> CONNECT</button>
+      <div style="text-align:center;margin-top:4px;">
+        <button onclick="showScreen('team-picker')" style="background:none;border:none;color:var(--muted2);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-decoration:underline;">← back to team draw</button>
+      </div>
     </div>
   </div>
 
@@ -4146,14 +4154,42 @@
     //  PLAYER LOGIC
     // ══════════════════════════════════════════════════════════════
     function playerJoin() {
+      // Ensure Firebase is ready
       if (!db) {
         if (typeof firebase !== 'undefined') initFirebase(FIREBASE_URL);
-        if (!db) { showToast('⚡ Connecting to warzone… retrying!', 'warn'); setTimeout(playerJoin, 1000); return; }
+        if (!db) {
+          showToast('⚡ Connecting… please wait', 'warn');
+          setTimeout(playerJoin, 1200);
+          return;
+        }
       }
-      const name = document.getElementById('player-name').value.trim();
-      const code = document.getElementById('player-room-code').value.trim().toUpperCase();
-      if (!name) { showToast('Enter your name!', 'error'); return; }
-      if (!code) { showToast('Enter room code!', 'error'); return; }
+
+      const nameField = document.getElementById('player-name');
+      const codeField = document.getElementById('player-room-code');
+      const name = nameField.value.trim();
+      const code = codeField.value.trim().toUpperCase();
+
+      // Validate — name comes from team draw (readonly), code typed by player
+      if (!name) {
+        showToast('⚠️ Go back and draw your team number first!', 'warn');
+        // Send them back to team picker
+        showScreen('team-picker');
+        return;
+      }
+      if (!code) {
+        showToast('⚠️ Enter the Session ID from your host!', 'warn');
+        codeField.focus();
+        return;
+      }
+      if (code.length < 4) {
+        showToast('⚠️ Session ID looks too short — check with host', 'warn');
+        codeField.focus();
+        return;
+      }
+
+      // Disable connect button to prevent double-submit
+      const connectBtn = document.querySelector('#player-join .btn-secondary');
+      if (connectBtn) { connectBtn.disabled = true; connectBtn.textContent = '⏳ CONNECTING…'; }
 
       const pid = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
       playerState = {
@@ -4164,30 +4200,50 @@
         questionStartTime: null
       };
 
-      // Check room exists
       const pRoomRef = db.ref('rooms/' + code);
       pRoomRef.once('value').then(snap => {
+        // Re-enable button regardless of outcome
+        if (connectBtn) { connectBtn.disabled = false; connectBtn.textContent = '> CONNECT'; }
+
         if (!snap.exists()) {
-          showToast('❌ Room not found!', 'error');
+          showToast('❌ Room "' + code + '" not found — check the Session ID', 'error');
           playerState = null;
           return;
         }
         const room = snap.val();
-        if (room.status !== 'lobby') {
-          showToast('❌ Game already started!', 'error');
+        if (room.status === 'terminated') {
+          showToast('❌ This session has ended', 'error');
           playerState = null;
           return;
         }
-        // Send join action
-        pRoomRef.child('actions').push({ type: 'PLAYER_JOIN', data: { playerId: pid, name, roomCode: code }, ts: Date.now(), processed: false });
-        // Show rules before entering waiting room
-        document.getElementById('pw-name').textContent = `👋 Hello, ${name}!`;
+        if (room.status !== 'lobby') {
+          showToast('❌ Game already in progress — cannot join now', 'error');
+          playerState = null;
+          return;
+        }
+
+        // Push join action to Firebase
+        pRoomRef.child('actions').push({
+          type: 'PLAYER_JOIN',
+          data: { playerId: pid, name, roomCode: code },
+          ts: Date.now(),
+          processed: false
+        });
+
+        // Update waiting room UI
+        document.getElementById('pw-name').textContent = '👋 Hello, ' + name + '!';
         document.getElementById('pw-room').textContent = code;
+
+        // Start listening for host messages
         listenAsPlayer(pRoomRef, code, pid);
+
+        // Go to rules screen (player confirms before entering waiting room)
         showScreen('player-rules');
+
       }).catch(e => {
-        showToast('❌ Room not found or connection issue — try again', 'error');
+        if (connectBtn) { connectBtn.disabled = false; connectBtn.textContent = '> CONNECT'; }
         playerState = null;
+        showToast('❌ Connection failed — check your internet and try again', 'error');
       });
     }
 
@@ -4338,11 +4394,20 @@
         return;
       }
       if (type === 'JOIN_ERROR' && msg.playerId === playerState.id) {
-        showToast('❌ ' + msg.reason, 'error');
+        showToast('❌ ' + (msg.reason || 'Could not join — try again'), 'error');
         detachListeners();
+        // Restore name field so player can retry without losing their team number
+        const savedNum = sessionStorage.getItem('tpMyNumber');
         playerState = null;
+        if (savedNum) {
+          const nf = document.getElementById('player-name');
+          nf.value = 'Team ' + savedNum;
+          nf.readOnly = true;
+          nf.style.borderBottomColor = 'var(--green)';
+          nf.style.color = 'var(--green)';
+        }
         showScreen('player-join');
-        return; // ← FIX
+        return;
       }
       if (type === 'REJOIN_APPROVED' && msg.playerId === playerState.id) {
         playerAborted = false;
