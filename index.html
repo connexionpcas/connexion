@@ -3258,71 +3258,106 @@
     let tpSpinning = false;
     let tpSpinInterval = null;
     let tpCurrentNum = null;
-    let tpHasDrawn = false;  // once true, player cannot draw again
+    let tpHasDrawn = false;
+    let tpDbRef = null;       // Firebase ref to /teamDraw
+    let tpDbListener = null;  // active listener handle
 
-    // ── HOST SIDE: set / unlock limit ──
+    // ── Shared Firebase path for team draw ──
+    // All devices read/write here — ensures real-time sync across phones
+    function tpGetRef() {
+      if (!db) return null;
+      if (!tpDbRef) tpDbRef = db.ref('teamDraw');
+      return tpDbRef;
+    }
+
+    // ── HOST SIDE: write limit to Firebase ──
     function hostSetTeamLimit() {
       const val = parseInt(document.getElementById('host-tp-limit-input').value);
       const errEl = document.getElementById('host-tp-error');
       if (!val || val < 1) { errEl.textContent = 'Enter a valid number greater than 0'; return; }
+      if (!db) { errEl.textContent = 'Not connected — wait a moment and retry'; return; }
       errEl.textContent = '';
-      tpLimit = val;
-      tpGenerated = [];
-      tpCurrentNum = null;
-      // Save to localStorage so player tab on same device picks it up
-      localStorage.setItem('tpLimit', val);
-      localStorage.setItem('tpGenerated', JSON.stringify([]));
-      // Note: sessionStorage is per-tab, so players must re-draw in a new session
-      // Show locked display on host side
-      document.getElementById('host-tp-lock-btn').style.display = 'none';
-      document.getElementById('host-tp-limit-input').style.display = 'none';
-      document.querySelector('#host-tp-card .tp-setup-label').style.display = 'none';
-      document.getElementById('host-tp-locked-num').textContent = val;
-      document.getElementById('host-tp-locked-display').style.display = 'block';
-      // If player picker panel is visible, activate it
-      tpActivateFromLimit();
+
+      // Write to Firebase — all player devices will react instantly
+      db.ref('teamDraw').set({ limit: val, generated: [] }).then(() => {
+        tpLimit = val;
+        tpGenerated = [];
+        tpCurrentNum = null;
+        // Update host UI
+        document.getElementById('host-tp-lock-btn').style.display = 'none';
+        document.getElementById('host-tp-limit-input').style.display = 'none';
+        document.querySelector('#host-tp-card .tp-setup-label').style.display = 'none';
+        document.getElementById('host-tp-locked-num').textContent = val;
+        document.getElementById('host-tp-locked-display').style.display = 'block';
+      }).catch(() => {
+        errEl.textContent = 'Failed to save — check connection';
+      });
     }
 
     function hostUnlockTeamLimit() {
-      // Allow host to change the limit
-      document.getElementById('host-tp-lock-btn').style.display = '';
-      document.getElementById('host-tp-limit-input').style.display = '';
-      document.querySelector('#host-tp-card .tp-setup-label').style.display = '';
-      document.getElementById('host-tp-locked-display').style.display = 'none';
-      document.getElementById('host-tp-limit-input').value = tpLimit || '';
-      tpLimit = 0;
-      localStorage.removeItem('tpLimit');
-      localStorage.removeItem('tpGenerated');
-      // Return player picker to waiting state
-      document.getElementById('tp-waiting-panel').style.display = 'block';
-      document.getElementById('tp-picker-panel').style.display = 'none';
+      if (!db) return;
+      db.ref('teamDraw').remove().then(() => {
+        tpLimit = 0;
+        tpGenerated = [];
+        tpCurrentNum = null;
+        document.getElementById('host-tp-lock-btn').style.display = '';
+        document.getElementById('host-tp-limit-input').style.display = '';
+        document.querySelector('#host-tp-card .tp-setup-label').style.display = '';
+        document.getElementById('host-tp-locked-display').style.display = 'none';
+        document.getElementById('host-tp-limit-input').value = '';
+        // Revert player side if on same device
+        document.getElementById('tp-waiting-panel').style.display = 'block';
+        document.getElementById('tp-picker-panel').style.display = 'none';
+      });
     }
 
-    // ── PLAYER SIDE: activate picker once limit known ──
+    // ── PLAYER SIDE: activate picker UI ──
     function tpActivateFromLimit() {
       if (!tpLimit) return;
-      // Only activate if we are on the team-picker screen
       document.getElementById('tp-waiting-panel').style.display = 'none';
       document.getElementById('tp-picker-panel').style.display = 'block';
       tpUpdateStatus();
     }
 
-    // Read limit + generated list from localStorage and activate picker if valid
-    function tpCheckLimit() {
-      const stored = localStorage.getItem('tpLimit');
-      if (stored && parseInt(stored) > 0) {
-        tpLimit = parseInt(stored);
-        const gen = localStorage.getItem('tpGenerated');
-        tpGenerated = gen ? JSON.parse(gen) : [];
-        tpActivateFromLimit();
-        if (tpGenerated.length) tpUpdateHistory();
+    // ── Subscribe to Firebase teamDraw — works on ALL devices in real-time ──
+    function tpStartListening() {
+      if (!db) {
+        // DB not ready yet — retry shortly
+        setTimeout(tpStartListening, 800);
+        return;
+      }
+      const ref = tpGetRef();
+      if (tpDbListener) ref.off('value', tpDbListener);
 
-        // Restore state if this player already drew a number this session
+      tpDbListener = ref.on('value', snap => {
+        const data = snap.val();
+
+        if (!data || !data.limit) {
+          // No limit set yet — show waiting panel
+          tpLimit = 0;
+          tpGenerated = [];
+          document.getElementById('tp-waiting-panel').style.display = 'block';
+          document.getElementById('tp-picker-panel').style.display = 'none';
+          return;
+        }
+
+        const newLimit = parseInt(data.limit);
+        const newGenerated = Array.isArray(data.generated) ? data.generated : Object.values(data.generated || {});
+
+        const wasActive = tpLimit > 0;
+        tpLimit = newLimit;
+        tpGenerated = newGenerated;
+
+        // Activate picker if not already active
+        if (!wasActive) tpActivateFromLimit();
+        tpUpdateStatus();
+        tpUpdateHistory();
+
+        // Restore this player's own number if they already drew (page refresh case)
         const myNum = sessionStorage.getItem('tpMyNumber');
-        if (myNum) {
+        if (myNum && !tpHasDrawn) {
           tpCurrentNum = parseInt(myNum);
           tpHasDrawn = true;
-          // Show their number as locked
           document.getElementById('tp-placeholder').style.display = 'none';
           document.getElementById('tp-number-wrap').classList.add('show');
           document.getElementById('tp-big-num').textContent = tpCurrentNum;
@@ -3332,72 +3367,14 @@
           document.getElementById('tp-gen-btn').style.opacity = '0.4';
           document.getElementById('tp-gen-btn').textContent = '✓ NUMBER DRAWN';
           document.getElementById('tp-proceed-btn').classList.add('show');
-          // Auto-fill player name field
           document.getElementById('player-name').value = 'Team ' + tpCurrentNum;
         }
-
-        return true;
-      }
-      return false;
+      });
     }
 
-    // Cross-tab storage event — fires in OTHER tabs when localStorage changes
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'tpLimit') {
-        if (e.newValue && parseInt(e.newValue) > 0) {
-          // Host just locked the limit — activate picker on client tab
-          if (currentTab === 'player') {
-            tpCheckLimit();
-          }
-        } else {
-          // Host cleared the limit — revert to waiting state
-          if (currentTab === 'player') {
-            tpLimit = 0;
-            tpGenerated = [];
-            tpCurrentNum = null;
-            document.getElementById('tp-waiting-panel').style.display = 'block';
-            document.getElementById('tp-picker-panel').style.display = 'none';
-          }
-        }
-      }
-      if (e.key === 'tpGenerated' && tpLimit > 0 && currentTab === 'player') {
-        // Another player tab generated a number — sync our list
-        try {
-          const gen = JSON.parse(e.newValue || '[]');
-          tpGenerated = gen;
-          tpUpdateStatus();
-          tpUpdateHistory();
-        } catch(_) {}
-      }
-    });
-
-    // Polling fallback: same-tab (host + player on same page instance) won't fire
-    // the storage event, so we poll every 800ms while on team-picker screen
-    let _tpPollInterval = null;
-    function tpStartPolling() {
-      if (_tpPollInterval) return;
-      _tpPollInterval = setInterval(() => {
-        const activePicker = document.getElementById('team-picker');
-        if (!activePicker || !activePicker.classList.contains('active')) return;
-        if (tpLimit > 0) {
-          // Already active — check if generated list changed from another source
-          const gen = localStorage.getItem('tpGenerated');
-          if (gen) {
-            try {
-              const parsed = JSON.parse(gen);
-              if (parsed.length !== tpGenerated.length) {
-                tpGenerated = parsed;
-                tpUpdateStatus();
-                tpUpdateHistory();
-              }
-            } catch(_) {}
-          }
-        } else {
-          // Not yet active — try to activate
-          tpCheckLimit();
-        }
-      }, 800);
-    }
+    // Legacy stub — now replaced by tpStartListening
+    function tpCheckLimit() { tpStartListening(); }
+    function tpStartPolling() { tpStartListening(); }
 
     function tpUpdateStatus() {
       const left = tpLimit - tpGenerated.length;
@@ -3407,28 +3384,18 @@
       leftEl.textContent = left;
       leftEl.className = 'tp-stat-left-val' + (left === 0 ? ' empty' : '');
       document.getElementById('tp-all-used').style.display = left === 0 ? 'block' : 'none';
-      document.getElementById('tp-gen-btn').disabled = tpSpinning || left === 0;
+      document.getElementById('tp-gen-btn').disabled = tpSpinning || tpHasDrawn || left === 0;
     }
 
     function tpGenerate() {
-      // Enforce one-draw-per-player rule
       if (tpHasDrawn) return;
+      if (!db) { showToast('⚡ Not connected yet — try again', 'warn'); return; }
 
-      // Re-read the latest generated list from localStorage to avoid collisions
-      // with numbers drawn by other players in other tabs/devices
-      const latestGen = localStorage.getItem('tpGenerated');
-      if (latestGen) {
-        try { tpGenerated = JSON.parse(latestGen); } catch(_) {}
-      }
-
-      const remaining = Array.from({ length: tpLimit }, (_, i) => i + 1).filter(x => !tpGenerated.includes(x));
-      if (!remaining.length) {
-        showToast('⚠️ All numbers taken! Ask the host to reset.', 'warn');
-        return;
-      }
-
+      // Use Firebase transaction to atomically claim a unique number
+      // This prevents two players on different devices getting the same number
+      const ref = tpGetRef();
       tpSpinning = true;
-      tpHasDrawn = true; // Lock immediately — even if page refreshes mid-spin
+      tpHasDrawn = true;
       document.getElementById('tp-gen-btn').disabled = true;
       document.getElementById('tp-gen-btn').style.opacity = '0.4';
       document.getElementById('tp-gen-btn').textContent = '✓ NUMBER DRAWN';
@@ -3437,61 +3404,75 @@
       display.classList.remove('ready');
       display.classList.add('spinning');
       document.getElementById('tp-placeholder').style.display = 'none';
-      const wrap = document.getElementById('tp-number-wrap');
-      wrap.classList.add('show');
+      document.getElementById('tp-number-wrap').classList.add('show');
       document.getElementById('tp-proceed-btn').classList.remove('show');
 
+      // Animate spin while Firebase transaction runs
       let count = 0;
+      const spinNums = Array.from({ length: tpLimit }, (_, i) => i + 1).filter(x => !tpGenerated.includes(x));
       tpSpinInterval = setInterval(() => {
-        // Keep showing numbers from remaining pool during spin
-        const cur = remaining[Math.floor(Math.random() * remaining.length)];
-        document.getElementById('tp-big-num').textContent = cur;
-        count++;
-        if (count > 22) {
-          clearInterval(tpSpinInterval);
-
-          // Final pick — re-read once more to guarantee uniqueness at settle time
-          const freshGen = localStorage.getItem('tpGenerated');
-          let latestList = tpGenerated;
-          if (freshGen) { try { latestList = JSON.parse(freshGen); } catch(_) {} }
-          const freshRemaining = Array.from({ length: tpLimit }, (_, i) => i + 1).filter(x => !latestList.includes(x));
-
-          if (!freshRemaining.length) {
-            // Edge case: all numbers taken by the time spin ended
-            display.classList.remove('spinning');
-            tpSpinning = false;
-            document.getElementById('tp-big-num').textContent = '!';
-            document.getElementById('tp-output-line').textContent = 'No numbers left!';
-            display.classList.add('ready');
-            showToast('⚠️ All numbers were taken during draw! Ask the host.', 'warn');
-            return;
-          }
-
-          const final = freshRemaining[Math.floor(Math.random() * freshRemaining.length)];
-          tpCurrentNum = final;
-          tpGenerated = [...latestList, final];
-
-          // Persist — this is the source of truth for all tabs
-          localStorage.setItem('tpGenerated', JSON.stringify(tpGenerated));
-          // Save this player's drawn number so refresh doesn't let them redraw
-          sessionStorage.setItem('tpMyNumber', final);
-
-          const bigNum = document.getElementById('tp-big-num');
-          bigNum.textContent = final;
-          bigNum.classList.remove('tp-pop');
-          void bigNum.offsetWidth;
-          bigNum.classList.add('tp-pop');
-
-          document.getElementById('tp-output-line').textContent = 'team: ' + final;
-          display.classList.remove('spinning');
-          display.classList.add('ready');
-
-          tpSpinning = false;
-          tpUpdateStatus();
-          tpUpdateHistory();
-          document.getElementById('tp-proceed-btn').classList.add('show');
+        if (spinNums.length) {
+          document.getElementById('tp-big-num').textContent = spinNums[Math.floor(Math.random() * spinNums.length)];
         }
+        count++;
       }, 55);
+
+      // Firebase transaction — atomically pick and reserve a unique number
+      ref.transaction(current => {
+        if (!current || !current.limit) return; // abort if no limit set
+        const limit = parseInt(current.limit);
+        const taken = Array.isArray(current.generated)
+          ? current.generated
+          : Object.values(current.generated || {});
+        const remaining = Array.from({ length: limit }, (_, i) => i + 1).filter(x => !taken.includes(x));
+        if (!remaining.length) return; // abort — no numbers left
+        const picked = remaining[Math.floor(Math.random() * remaining.length)];
+        return { ...current, generated: [...taken, picked], _lastPicked: picked };
+      }, (error, committed, snap) => {
+        clearInterval(tpSpinInterval);
+
+        if (error || !committed || !snap) {
+          display.classList.remove('spinning');
+          tpSpinning = false;
+          tpHasDrawn = false;
+          document.getElementById('tp-gen-btn').disabled = false;
+          document.getElementById('tp-gen-btn').style.opacity = '';
+          document.getElementById('tp-gen-btn').textContent = '> DRAW MY NUMBER';
+          document.getElementById('tp-placeholder').style.display = 'block';
+          document.getElementById('tp-number-wrap').classList.remove('show');
+          showToast('⚠️ Draw failed — try again', 'warn');
+          return;
+        }
+
+        const data = snap.val();
+        if (!data || data._lastPicked === undefined) {
+          display.classList.remove('spinning');
+          tpSpinning = false;
+          showToast('⚠️ All numbers taken! Ask host to reset.', 'warn');
+          return;
+        }
+
+        const final = data._lastPicked;
+        tpCurrentNum = final;
+        tpGenerated = Array.isArray(data.generated) ? data.generated : Object.values(data.generated || {});
+
+        // Save to sessionStorage so refresh restores their number
+        sessionStorage.setItem('tpMyNumber', final);
+
+        const bigNum = document.getElementById('tp-big-num');
+        bigNum.textContent = final;
+        bigNum.classList.remove('tp-pop');
+        void bigNum.offsetWidth;
+        bigNum.classList.add('tp-pop');
+
+        document.getElementById('tp-output-line').textContent = 'team: ' + final;
+        display.classList.remove('spinning');
+        display.classList.add('ready');
+        tpSpinning = false;
+        tpUpdateStatus();
+        tpUpdateHistory();
+        document.getElementById('tp-proceed-btn').classList.add('show');
+      });
     }
 
     function tpUpdateHistory() {
@@ -3531,7 +3512,7 @@
         else if (localStatus === 'playing') showScreen('host-dashboard');
         else showScreen('host-gameover');
       } else {
-        if (!playerState) { tpCheckLimit(); tpStartPolling(); showScreen('team-picker'); }
+        if (!playerState) { tpStartListening(); showScreen('team-picker'); }
         else if (playerState.joined && playerState.currentQ < 0) showScreen('player-waiting');
         else if (playerState.currentQ >= 0) showScreen('player-game');
         else showScreen('player-rules'); // joined but not yet confirmed — show rules
@@ -4989,8 +4970,8 @@
         initFirebase(FIREBASE_URL);
       }
       showScreen('host-login');
-      // Start team picker polling immediately (handles same-tab host+player scenario)
-      tpStartPolling();
+      // Start Firebase team draw listener — works across all devices
+      tpStartListening();
       // Keep retrying init every 2s until db is ready
       const _initRetry = setInterval(() => {
         if (db) { clearInterval(_initRetry); return; }
