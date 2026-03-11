@@ -2817,10 +2817,10 @@
 
     <!-- Waiting state: shown when host hasn't set a limit yet -->
     <div class="card" id="tp-waiting-panel" style="text-align:center;padding:28px 16px;">
-      <div style="font-size:32px;margin-bottom:10px;">📡</div>
-      <div class="card-title" style="justify-content:center;">&gt; AWAITING HOST</div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted2);letter-spacing:2px;line-height:1.8;">
-        The host has not set a team limit yet.<br>Ask the host to lock the limit first.
+      <div style="font-size:32px;margin-bottom:10px;" id="tp-wait-icon">📡</div>
+      <div class="card-title" style="justify-content:center;" id="tp-wait-title">&gt; CONNECTING…</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted2);letter-spacing:2px;line-height:1.8;" id="tp-wait-msg">
+        Connecting to server, please wait…
       </div>
     </div>
 
@@ -3214,6 +3214,7 @@
         try {
           db = firebase.apps[0].database();
           if (!_connectedOnce) watchConnection();
+          tpStartListening(); // attach teamDraw listener now that db is ready
           return;
         } catch (e) { /* fall through to fresh init */ }
       }
@@ -3226,9 +3227,14 @@
         });
         db = firebase.database();
         watchConnection();
+        tpStartListening(); // attach teamDraw listener immediately after db assigned
       } catch (e) {
         // App may have been initialised already — grab existing instance
-        try { db = firebase.apps[0].database(); if (!_connectedOnce) watchConnection(); } catch (_) { }
+        try {
+          db = firebase.apps[0].database();
+          if (!_connectedOnce) watchConnection();
+          tpStartListening();
+        } catch (_) { }
       }
     }
 
@@ -3322,22 +3328,30 @@
     // ── Subscribe to Firebase teamDraw — works on ALL devices in real-time ──
     function tpStartListening() {
       if (!db) {
-        // DB not ready yet — retry shortly
-        setTimeout(tpStartListening, 800);
+        // db not ready — initFirebase will call us once db is assigned
         return;
       }
+      // Idempotent: detach old listener before attaching new one
       const ref = tpGetRef();
-      if (tpDbListener) ref.off('value', tpDbListener);
+      if (tpDbListener) { ref.off('value', tpDbListener); tpDbListener = null; }
+      if (tpDbListener) return; // already listening
 
       tpDbListener = ref.on('value', snap => {
         const data = snap.val();
 
         if (!data || !data.limit) {
-          // No limit set yet — show waiting panel
+          // Connected but host hasn't set limit yet
           tpLimit = 0;
           tpGenerated = [];
           document.getElementById('tp-waiting-panel').style.display = 'block';
           document.getElementById('tp-picker-panel').style.display = 'none';
+          // Update waiting panel to show we ARE connected, just waiting for host
+          const icon = document.getElementById('tp-wait-icon');
+          const title = document.getElementById('tp-wait-title');
+          const msg = document.getElementById('tp-wait-msg');
+          if (icon) icon.textContent = '📡';
+          if (title) title.textContent = '> AWAITING HOST';
+          if (msg) msg.innerHTML = 'The host has not set a team limit yet.<br>Ask the host to lock the limit first.';
           return;
         }
 
@@ -4970,9 +4984,8 @@
         initFirebase(FIREBASE_URL);
       }
       showScreen('host-login');
-      // Start Firebase team draw listener — works across all devices
-      tpStartListening();
-      // Keep retrying init every 2s until db is ready
+      // Keep retrying initFirebase every 2s until db is ready
+      // initFirebase itself calls tpStartListening once db is assigned
       const _initRetry = setInterval(() => {
         if (db) { clearInterval(_initRetry); return; }
         if (typeof firebase !== 'undefined') initFirebase(FIREBASE_URL);
